@@ -24,6 +24,13 @@ Colour.MAGENTA = Colour((64, 0, 64))
 Colour.BLACK = Colour((0, 0, 0))
 Colour.WHITE = Colour((64, 64, 64))
 
+Colour.RED_HUE = 0
+Colour.GREEN_HUE = 120
+Colour.BLUE_HUE = 240
+
+def hue_to_colour(hue, brightness=20):
+  return Colour.fromFloats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
+
 def open_read(path):
   f = open(path, 'rb')
   while True:

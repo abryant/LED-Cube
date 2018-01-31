@@ -3,7 +3,7 @@ import generators
 from colorsys import hsv_to_rgb
 import random
 
-LEDS = 32
+LEDS = 64
 
 def fade(colours, ratio):
   return [Colour((colours[i].r * ratio, colours[i].g * ratio, colours[i].b * ratio)) for i in range(len(colours))]
@@ -103,11 +103,12 @@ def scroll_pixel(colour):
 
 if __name__ == "__main__":
   with Display('/dev/ttyUSB0') as d:
-    generators.generate(d, generators.sequence([
-      scroll_pixel(Colour.RED),
-      scroll_pixel(Colour.GREEN),
-      scroll_pixel(Colour.BLUE),
-    ]))
+    # For testing the LEDs:
+    #generators.generate(d, generators.sequence([
+    #  scroll_pixel(Colour.RED),
+    #  scroll_pixel(Colour.GREEN),
+    #  scroll_pixel(Colour.BLUE),
+    #]))
     generators.generate(d, generators.shuffle([
       mirror(reverse(binary_count(LEDS // 2))),
       knight_rider(10),
