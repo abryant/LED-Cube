@@ -41,6 +41,17 @@ def sequence(gens):
         yield val
     yield True
 
+def reverse(gen):
+  while True:
+    vals = []
+    for val in gen:
+      if type(val) is bool:
+        break
+      vals.insert(0, val)
+    for val in vals:
+      yield val
+    yield True
+
 def debug(gen):
   for val in gen:
     if type(val) is bool:

@@ -4,6 +4,7 @@
 # snake: an AI playing 3D snake
 # sphere: a spinning ball made from a colour wheel
 # waves: a multicoloured 3D sine waveform, rotating around the axes
+# 2048: a 3D game of 2048 with LED brightness and colour indicating number, with cube rotations as moves (needs a rotation animation)
 #
 import generators
 from display import *
@@ -17,7 +18,7 @@ class Pos:
     self.y = y
     self.z = z
 
-  def is_in_bounds(self, size):
+  def is_in_bounds(self, size = SIZE):
     return self.x >= 0 and self.x < size and self.y >= 0 and self.y < size and self.z >= 0 and self.z < size
 
   def __add__(self, other):
@@ -39,6 +40,12 @@ class Pos:
 
   def __ne__(self, other):
     return not self.__eq__(other)
+
+  def __str__(self):
+    return "[" + str(self.x) + "," + str(self.y) + "," + str(self.z) + "]"
+
+  def __repr__(self):
+    return "[" + str(self.x) + "," + str(self.y) + "," + str(self.z) + "]"
 
 class Direction(Enum):
   UP = Pos(0, -1, 0)
@@ -71,6 +78,11 @@ class Cube:
   def __init__(self, size = SIZE, colour = Colour.BLACK):
     self.grid = [[[colour for z in range(size)] for y in range(size)] for x in range(size)]
     self.size = size
+
+  def copy(self):
+    other = Cube(size = self.size)
+    other.grid = [[[self.grid[x][y][z] for z in range(self.size)] for y in range(self.size)] for x in range(self.size)]
+    return other
 
   def __repr__(self):
     return repr(self.get_colours())
@@ -126,10 +138,12 @@ class Cube:
   def clear(self):
     self.fill(Pos(0, 0, 0), Pos(SIZE - 1, SIZE - 1, SIZE - 1), Colour.BLACK)
 
-  def fill_layer(self, direction, layer, colour):
+  def fill_layer(self, direction, layer, colours):
     """Fills the given layer in the given direction with the given colour.
 
     As the layer number increases [0-3], the filled layer moves towards the given direction."""
+    if type(colours) is Colour:
+      colours = [[colours for i in range(SIZE)] for j in range(SIZE)]
     direction_value = direction.value.x if direction.value.x != 0 else (direction.value.y if direction.value.y != 0 else direction.value.z)
     fixed_coord = layer if direction_value > 0 else (SIZE - 1 - layer)
     for i in range(SIZE):
@@ -137,7 +151,20 @@ class Cube:
         x = i if direction.value.x == 0 else fixed_coord
         y = i if direction.value.x != 0 else (j if direction.value.y == 0 else fixed_coord)
         z = j if direction.value.z == 0 else fixed_coord
-        self.grid[x][y][z] = colour
+        self.grid[x][y][z] = colours[i][j]
+
+  def get_layer(self, direction, layer):
+    """Gets the given layer, as a 2D list of colours."""
+    direction_value = direction.value.x if direction.value.x != 0 else (direction.value.y if direction.value.y != 0 else direction.value.z)
+    fixed_coord = layer if direction_value > 0 else (SIZE - 1 - layer)
+    result = [[Colour.BLACK for i in range(SIZE)] for j in range(SIZE)]
+    for i in range(SIZE):
+      for j in range(SIZE):
+        x = i if direction.value.x == 0 else fixed_coord
+        y = i if direction.value.x != 0 else (j if direction.value.y == 0 else fixed_coord)
+        z = j if direction.value.z == 0 else fixed_coord
+        result[i][j] = self.grid[x][y][z]
+    return result
 
   def fill_line(self, line_direction, other_coords, colours):
     """Fills the given line with the given colours.

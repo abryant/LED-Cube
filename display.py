@@ -15,14 +15,20 @@ class Colour:
   def __str__(self):
     return "[r:" + str(self.r) + ", g:" + str(self.g) + ", b:" + str(self.b) + "]"
 
-Colour.RED = Colour((64, 0, 0))
-Colour.YELLOW = Colour((64, 64, 0))
-Colour.GREEN = Colour((0, 64, 0))
-Colour.CYAN = Colour((0, 64, 64))
-Colour.BLUE = Colour((0, 0, 64))
-Colour.MAGENTA = Colour((64, 0, 64))
+  def __eq__(self, other):
+    return self.r == other.r and self.g == other.g and self.b == other.b
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+Colour.RED = Colour((20, 0, 0))
+Colour.YELLOW = Colour((20, 20, 0))
+Colour.GREEN = Colour((0, 20, 0))
+Colour.CYAN = Colour((0, 20, 20))
+Colour.BLUE = Colour((0, 0, 20))
+Colour.MAGENTA = Colour((20, 0, 20))
 Colour.BLACK = Colour((0, 0, 0))
-Colour.WHITE = Colour((64, 64, 64))
+Colour.WHITE = Colour((20, 20, 20))
 
 Colour.RED_HUE = 0
 Colour.GREEN_HUE = 120
