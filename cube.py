@@ -179,8 +179,30 @@ class Cube:
       x = i if line_direction.value.x != 0 else other_coords.x
       y = i if line_direction.value.y != 0 else other_coords.y
       z = i if line_direction.value.z != 0 else other_coords.z
-      self.grid[x][y][z] = colours[i]
+      self.grid[x][y][z] = cs[i]
 
+  def get_line(self, line_direction, other_coords):
+    """Gets the colours on the given line
+
+    The direction represents the direction that the line is pointing in.
+    other_coords is a Pos that represents the other two coordinates, the component in line_direction is ignored."""
+    line_direction_value = line_direction.value.x if line_direction.value.x != 0 else (line_direction.value.y if line_direction.value.y != 0 else line_direction.value.z)
+    cs = [Colour.BLACK for i in range(SIZE)]
+    for i in range(SIZE):
+      x = i if line_direction.value.x != 0 else other_coords.x
+      y = i if line_direction.value.y != 0 else other_coords.y
+      z = i if line_direction.value.z != 0 else other_coords.z
+      cs[i] = self.grid[x][y][z]
+    if line_direction_value < 0:
+      cs.reverse()
+    return cs
+
+  def transform_colours(self, f):
+    """Transforms all of the colours in the cube using f(colour)"""
+    for x in range(SIZE):
+      for y in range(SIZE):
+        for z in range(SIZE):
+          self.grid[x][y][z] = f(self.grid[x][y][z])
 
 def scroll_in(cube, direction):
   result = Cube(cube.size)
