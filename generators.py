@@ -15,6 +15,13 @@ def shuffle(gens):
       yield val
     yield True
 
+def transform(generator, transform_function):
+  for val in generator:
+    if type(val) is bool:
+      yield val
+    else:
+      yield transform_function(val)
+
 def generate(display, gen, delay=0.05):
   while True:
     for colours in gen:
@@ -32,13 +39,29 @@ def repeat(gen, times):
         yield val
     yield True
 
-def sequence(gens):
+def sequence(gens, transition=None):
   while True:
+    prev = None
     for i in range(len(gens)):
+      if transition is not None and prev is not None:
+        current = next(gens[i])
+        if type(current) is bool:
+          # zero-length generator, move to next one
+          continue
+        prev_transition = None
+        for t in transition(prev, current):
+          if prev_transition is not None:
+            yield prev_transition
+          prev_transition = t
+        prev = prev_transition
+
       for val in gens[i]:
         if type(val) is bool:
           break
-        yield val
+        if prev is not None:
+          yield prev
+        prev = val
+    yield prev
     yield True
 
 def reverse(gen):

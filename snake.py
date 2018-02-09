@@ -28,7 +28,7 @@ class Game:
     c.set(self.fruit, Colour.RED)
     c.set(self.snake[0], Colour.WHITE)
     for i, p in enumerate(self.snake[1:]):
-      c.set(p, Colour((0, 20 - i * (10 / (len(self.snake) - 1)), 0)))
+      c.set(p, Colour((0, 20 - i * (18 / (len(self.snake) - 1)), 0)))
     return c
 
   def get_next_position(self):
@@ -36,7 +36,7 @@ class Game:
 
   def can_advance(self):
     next_pos = self.get_next_position()
-    return next_pos.is_in_bounds() and next_pos not in self.snake
+    return next_pos.is_in_bounds() and next_pos not in self.snake[:-1]
 
   def advance(self):
     self.snake.insert(0, self.get_next_position())
@@ -50,9 +50,11 @@ def main():
     keyboard = Keyboard()
     while True:
       game = Game()
+      # consume any pending keyboard input
+      keyboard.get_last_char(options = key_directions.keys())
       while True:
         d.display(game.draw().get_colours())
-        time.sleep(1)
+        time.sleep(0.25)
         char = keyboard.get_last_char(options = key_directions.keys())
         if char != '':
           new_dir = key_directions[char]

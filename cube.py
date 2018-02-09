@@ -70,6 +70,19 @@ def get_perpendicular_direction(dir1, dir2):
     return Direction.DOWN
   raise ValueError(str(dir1) + " and " + str(dir2) + " are not perpendicular")
 
+def convert_face_coordinates(face_dir, coord, layer):
+  x, y = coord
+  x_inv, y_inv = SIZE - 1 - x, SIZE - 1 - y
+  layer_inv = SIZE - 1 - layer
+  return {
+    Direction.UP: Pos(x, layer, y),
+    Direction.DOWN: Pos(x, layer_inv, y_inv),
+    Direction.LEFT: Pos(layer, y, x),
+    Direction.RIGHT: Pos(layer_inv, y, x_inv),
+    Direction.BACK: Pos(x_inv, y, layer),
+    Direction.FRONT: Pos(x, y, layer_inv),
+  }[face_dir]
+
 def is_direction_positive(direction):
   return (direction == Direction.DOWN or direction == Direction.RIGHT or direction == Direction.FRONT)
 
@@ -78,6 +91,22 @@ class Cube:
   def __init__(self, size = SIZE, colour = Colour.BLACK):
     self.grid = [[[colour for z in range(size)] for y in range(size)] for x in range(size)]
     self.size = size
+
+
+  def from_colours(colours):
+    assert len(colours) == (SIZE * SIZE * SIZE)
+    result = Cube()
+    for layer_index in range(SIZE):
+      layer = colours[(layer_index * SIZE * SIZE):((layer_index + 1) * SIZE * SIZE)]
+      if (layer_index % 2) == 0:
+        layer.reverse()
+      for line_index in range(SIZE):
+        line = layer[(line_index * SIZE):((line_index + 1) * SIZE)]
+        if (line_index % 2) == 0:
+          line.reverse()
+        result.grid[layer_index][line_index] = line
+    return result
+
 
   def copy(self):
     other = Cube(size = self.size)
@@ -141,29 +170,21 @@ class Cube:
   def fill_layer(self, direction, layer, colours):
     """Fills the given layer in the given direction with the given colour.
 
-    As the layer number increases [0-3], the filled layer moves towards the given direction."""
+    As the layer number increases [0-3], the filled layer moves away from the given direction."""
     if type(colours) is Colour:
       colours = [[colours for i in range(SIZE)] for j in range(SIZE)]
-    direction_value = direction.value.x if direction.value.x != 0 else (direction.value.y if direction.value.y != 0 else direction.value.z)
-    fixed_coord = layer if direction_value > 0 else (SIZE - 1 - layer)
     for i in range(SIZE):
       for j in range(SIZE):
-        x = i if direction.value.x == 0 else fixed_coord
-        y = i if direction.value.x != 0 else (j if direction.value.y == 0 else fixed_coord)
-        z = j if direction.value.z == 0 else fixed_coord
-        self.grid[x][y][z] = colours[i][j]
+        coords = convert_face_coordinates(direction, (i, j), layer)
+        self.grid[coords.x][coords.y][coords.z] = colours[i][j]
 
   def get_layer(self, direction, layer):
     """Gets the given layer, as a 2D list of colours."""
-    direction_value = direction.value.x if direction.value.x != 0 else (direction.value.y if direction.value.y != 0 else direction.value.z)
-    fixed_coord = layer if direction_value > 0 else (SIZE - 1 - layer)
     result = [[Colour.BLACK for i in range(SIZE)] for j in range(SIZE)]
     for i in range(SIZE):
       for j in range(SIZE):
-        x = i if direction.value.x == 0 else fixed_coord
-        y = i if direction.value.x != 0 else (j if direction.value.y == 0 else fixed_coord)
-        z = j if direction.value.z == 0 else fixed_coord
-        result[i][j] = self.grid[x][y][z]
+        coords = convert_face_coordinates(direction, (i, j), layer)
+        result[i][j] = self.grid[coords.x][coords.y][coords.z]
     return result
 
   def fill_line(self, line_direction, other_coords, colours):
@@ -171,6 +192,8 @@ class Cube:
 
     The direction represents the direction that the line is pointing in.
     other_coords is a Pos that represents the other two coordinates, the component in line_direction is ignored."""
+    if type(colours) is Colour:
+      colours = [colours for i in range(SIZE)]
     cs = colours[:]
     line_direction_value = line_direction.value.x if line_direction.value.x != 0 else (line_direction.value.y if line_direction.value.y != 0 else line_direction.value.z)
     if line_direction_value < 0:
@@ -215,7 +238,7 @@ def scroll_in(cube, direction):
             newpos = startpos + (direction.value * i) + Pos(x, y, z)
             if newpos.is_in_bounds(cube.size):
               result.set(newpos, cube.get(Pos(x, y, z)))
-      yield result
+      yield result.copy()
     result = Cube(cube.size)
     yield True
 
@@ -229,12 +252,21 @@ def scroll_out(cube, direction):
             newpos = (direction.value * (i+1)) + Pos(x, y, z)
             if newpos.is_in_bounds(cube.size):
               result.set(newpos, cube.get(Pos(x, y, z)))
-      yield result
+      yield result.copy()
     yield True
 
 def single_frame(cube):
   while True:
     yield cube
+    yield True
+
+def cycle(cube, direction):
+  c = cube.copy()
+  while True:
+    for i in range(cube.size):
+      for layer in range(cube.size):
+        c.fill_layer(direction, (layer + i) % cube.size, cube.get_layer(direction, layer))
+      yield c.copy()
     yield True
 
 def scroll_past(cube, direction):

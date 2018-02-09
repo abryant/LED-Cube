@@ -1,7 +1,10 @@
 from display import *
 from cube import *
-from sides import sides
-from line import scroll_in, scroll_out, cycle, rainbow
+import sides
+import line
+import rainbow
+import transitions
+import line_maps
 
 if __name__ == "__main__":
   with Display('/dev/ttyUSB0') as d:
@@ -11,11 +14,16 @@ if __name__ == "__main__":
         scroll_past(Cube(SIZE, Colour((0, 20, 0))), Direction.RIGHT),
         scroll_past(Cube(SIZE, Colour((0, 0, 20))), Direction.FRONT),
       ]),
-      generators.repeat(sides(), 20),
-      generators.sequence([
-        scroll_in(rainbow()),
-        generators.repeat(cycle(rainbow()), 2),
-        scroll_out(rainbow()),
-      ]),
+#      generators.sequence([
+#        scroll_in(rainbow.diagonal_rainbow(), Direction.UP),
+#        generators.repeat(cycle(rainbow.diagonal_rainbow(), Direction.UP), 5),
+#        scroll_out(rainbow.diagonal_rainbow(), Direction.UP),
+#      ]),
+      generators.repeat(sides.sides(), 20),
+      line_maps.line_to_cube(generators.sequence([
+        line.scroll_in(line.rainbow()),
+        generators.repeat(line.cycle(line.rainbow()), 2),
+        line.scroll_out(line.rainbow()),
+      ])),
     ]))
 
