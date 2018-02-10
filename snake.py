@@ -54,7 +54,7 @@ def main():
       keyboard.get_last_char(options = key_directions.keys())
       while True:
         d.display(game.draw().get_colours())
-        time.sleep(0.25)
+        time.sleep(1)
         char = keyboard.get_last_char(options = key_directions.keys())
         if char != '':
           new_dir = key_directions[char]
