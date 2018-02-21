@@ -13,7 +13,7 @@ def random_static(num_leds, brightness=20):
     yield [Colour(hsv_to_rgb(random.randint(0, 359) / 360, 1, random.randint(1, brightness))) for i in range(num_leds)]
 
 def rainbow(num_leds = LEDS, brightness = 20):
-  return [Colour(hsv_to_rgb(i / 360, 1, brightness)) for i in range(0, 360, 360 // num_leds)]
+  return [Colour(hsv_to_rgb(i / num_leds, 1, brightness)) for i in range(num_leds)]
 
 def cycle(colours, dir=1):
   i = 0
