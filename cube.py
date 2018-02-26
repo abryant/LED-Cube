@@ -1,8 +1,6 @@
 # TODO: visualizations
-# matrix: green dots falling, with trails
 # snow: snowflakes falling onto a white base
-# snake: an AI playing 3D snake
-# sphere: a spinning ball made from a colour wheel
+# snake AI: an AI playing 3D snake
 # waves: a multicoloured 3D sine waveform, rotating around the axes
 # 2048: a 3D game of 2048 with LED brightness and colour indicating number, with cube rotations as moves (needs a rotation animation)
 #

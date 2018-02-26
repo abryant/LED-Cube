@@ -14,11 +14,6 @@ if __name__ == "__main__":
         scroll_past(Cube(SIZE, Colour((0, 20, 0))), Direction.RIGHT),
         scroll_past(Cube(SIZE, Colour((0, 0, 20))), Direction.FRONT),
       ]),
-#      generators.sequence([
-#        scroll_in(rainbow.diagonal_rainbow(), Direction.UP),
-#        generators.repeat(cycle(rainbow.diagonal_rainbow(), Direction.UP), 5),
-#        scroll_out(rainbow.diagonal_rainbow(), Direction.UP),
-#      ]),
       generators.repeat(sides.sides(), 20),
       line_maps.line_to_cube(generators.sequence([
         line.scroll_in(line.rainbow()),
