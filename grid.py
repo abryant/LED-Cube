@@ -1,3 +1,4 @@
+from config import SIZE
 from display import *
 from position import *
 import generators
@@ -95,7 +96,7 @@ def single_frame(grid):
 
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     g = Grid()
     g.fill_line(Direction.UP, 0, Colour.GREEN)
     g.fill_line(Direction.DOWN, 0, Colour.RED)

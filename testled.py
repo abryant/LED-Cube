@@ -7,7 +7,7 @@ def single_frame(colours):
     yield True
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, generators.sequence([
       single_frame([Colour.RED]),
       single_frame([Colour.GREEN]),

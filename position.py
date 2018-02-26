@@ -1,6 +1,5 @@
 from enum import Enum
-
-SIZE = 8
+from config import SIZE
 
 class Pos:
   def __init__(self, x, y, z):

@@ -5,6 +5,7 @@
 # 2048: a 3D game of 2048 with LED brightness and colour indicating number, with cube rotations as moves (needs a rotation animation)
 #
 import generators
+from config import SIZE
 from display import *
 from position import *
 
@@ -226,7 +227,7 @@ def scroll_past(cube, direction):
   return generators.sequence([scroll_in(cube, direction), single_frame(cube), scroll_out(cube, direction)])
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, generators.sequence([
       scroll_past(Cube(SIZE, Colour.RED), Direction.UP),
       scroll_past(Cube(SIZE, Colour.GREEN), Direction.RIGHT),

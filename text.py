@@ -21,7 +21,7 @@ def marquee(text, colours):
       transition = functools.partial(grid_transitions.scroll, Direction.RIGHT))
 
 def main():
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, marquee("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789", [Colour.RED, Colour.GREEN, Colour.BLUE]))
 
 if __name__ == "__main__":

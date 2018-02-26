@@ -1,3 +1,4 @@
+from config import SIZE
 from cube import *
 from display import *
 import generators
@@ -30,5 +31,5 @@ def rotate_colour_cube(speed):
     yield True
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, rotate_colour_cube(pi / 20))

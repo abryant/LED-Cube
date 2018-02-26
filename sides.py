@@ -1,4 +1,5 @@
 import generators
+from config import SIZE
 from display import *
 from cube import *
 import random
@@ -140,6 +141,6 @@ def sides_with_edges():
 
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, sides(), delay=0.05)
 

@@ -7,7 +7,7 @@ import transitions
 import line_maps
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, generators.sequence([
       generators.sequence([
         scroll_past(Cube(SIZE, Colour((20, 0, 0))), Direction.UP),

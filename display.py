@@ -1,5 +1,6 @@
 from time import sleep
 from colorsys import hsv_to_rgb
+import config
 import os
 
 class Colour:
@@ -46,9 +47,9 @@ def open_read(path):
       return f
 
 class Display:
-  def __init__(self, path):
+  def __init__(self, path = config.DISPLAY_FILE):
     self.path = path
-    os.system('stty -F /dev/ttyUSB0 cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts')
+    os.system('stty -F ' + path + ' cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts')
     self.readfile = open_read(path)
     self.writefile = open(path, 'wb')
 
@@ -74,7 +75,7 @@ class Display:
     self.readfile.close()
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     cs = [Colour(hsv_to_rgb(i / 360, 1, 20)) for i in range(0, 360, 30)]
     print([str(c) for c in cs])
     while True:

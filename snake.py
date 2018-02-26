@@ -1,3 +1,4 @@
+from config import SIZE
 from cube import *
 from display import *
 from keyboard import *
@@ -46,7 +47,7 @@ class Game:
       self.snake = self.snake[0:-1]
 
 def main():
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     keyboard = Keyboard()
     while True:
       game = Game()

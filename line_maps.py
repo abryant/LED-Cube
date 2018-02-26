@@ -1,4 +1,5 @@
 # Mappings from line to cube.
+from config import SIZE
 from cube import *
 from display import *
 import line
@@ -49,7 +50,7 @@ def line_to_cube(line_generator, cube_transform = control_order):
 
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, generators.transform(line_to_cube(generators.sequence([
         line.scroll_in(line.rainbow()),
         generators.repeat(line.cycle(line.rainbow(), dir=6), 2),

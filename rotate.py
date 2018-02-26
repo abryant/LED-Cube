@@ -1,3 +1,4 @@
+from config import SIZE
 from cube import *
 from display import *
 import rainbow
@@ -52,7 +53,7 @@ def make_rotated_hue_cube():
 
 if __name__ == "__main__":
   cube = rainbow.make_colour_cube()
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     generators.generate(d, generators.sequence([
       generators.repeat(rotate_cube(cube, Direction.UP), 5),
       generators.repeat(rotate_cube(cube, Direction.LEFT), 5),

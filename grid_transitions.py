@@ -1,3 +1,4 @@
+from config import SIZE
 from grid import *
 from display import *
 import random

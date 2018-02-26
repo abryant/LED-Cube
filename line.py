@@ -1,3 +1,4 @@
+from config import SIZE
 from display import *
 import generators
 from colorsys import hsv_to_rgb
@@ -102,7 +103,7 @@ def scroll_pixel(colour):
   return generators.sequence([single_frame(cs), scroll_out(cs)])
 
 if __name__ == "__main__":
-  with Display('/dev/ttyUSB0') as d:
+  with Display() as d:
     # For testing the LEDs:
     #generators.generate(d, generators.sequence([
     #  scroll_pixel(Colour.RED),
