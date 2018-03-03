@@ -1,6 +1,7 @@
 from time import sleep
 from colorsys import hsv_to_rgb
 import config
+from config import BRIGHTNESS, DISPLAY_FILE
 import os
 
 class Colour:
@@ -22,20 +23,20 @@ class Colour:
   def __ne__(self, other):
     return not self.__eq__(other)
 
-Colour.RED = Colour((20, 0, 0))
-Colour.YELLOW = Colour((20, 20, 0))
-Colour.GREEN = Colour((0, 20, 0))
-Colour.CYAN = Colour((0, 20, 20))
-Colour.BLUE = Colour((0, 0, 20))
-Colour.MAGENTA = Colour((20, 0, 20))
+Colour.RED = Colour((BRIGHTNESS, 0, 0))
+Colour.YELLOW = Colour((BRIGHTNESS, BRIGHTNESS, 0))
+Colour.GREEN = Colour((0, BRIGHTNESS, 0))
+Colour.CYAN = Colour((0, BRIGHTNESS, BRIGHTNESS))
+Colour.BLUE = Colour((0, 0, BRIGHTNESS))
+Colour.MAGENTA = Colour((BRIGHTNESS, 0, BRIGHTNESS))
 Colour.BLACK = Colour((0, 0, 0))
-Colour.WHITE = Colour((20, 20, 20))
+Colour.WHITE = Colour((BRIGHTNESS, BRIGHTNESS, BRIGHTNESS))
 
 Colour.RED_HUE = 0
 Colour.GREEN_HUE = 120
 Colour.BLUE_HUE = 240
 
-def hue_to_colour(hue, brightness=20):
+def hue_to_colour(hue, brightness=BRIGHTNESS):
   return Colour.fromFloats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
 
 def open_read(path):
@@ -47,7 +48,7 @@ def open_read(path):
       return f
 
 class Display:
-  def __init__(self, path = config.DISPLAY_FILE):
+  def __init__(self, path = DISPLAY_FILE):
     self.path = path
     os.system('stty -F ' + path + ' cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts')
     self.readfile = open_read(path)
