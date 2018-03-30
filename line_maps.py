@@ -53,7 +53,7 @@ if __name__ == "__main__":
   with Display() as d:
     generators.generate(d, generators.transform(line_to_cube(generators.sequence([
         line.scroll_in(line.rainbow()),
-        generators.repeat(line.cycle(line.rainbow(), dir=6), 2),
+        generators.repeat(line.cycle(line.rainbow()), 2),
         line.scroll_out(line.rainbow()),
       ]), spiral), functools.partial(rotate.rotate, Direction.LEFT, 1)))
 
