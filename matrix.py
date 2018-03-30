@@ -32,7 +32,7 @@ def matrix():
   while True:
     for x in range(SIZE):
       for z in range(SIZE):
-        c.fill_line(Direction.UP, Pos(x, 0, z), next(gens[x][z]))
+        c.fill_line(Direction.DOWN, Pos(x, 0, z), next(gens[x][z]))
     yield c
 
 if __name__ == "__main__":
