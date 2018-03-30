@@ -5,12 +5,12 @@ import generators
 from math import atan2, pi
 import colorsys
 
-def diagonal_rainbow(scales = Pos(1, 1, 1)):
+def diagonal_rainbow(scales = Pos(1, 1, 1), offset = 0):
   c = Cube()
   for x in range(c.size):
     for y in range(c.size):
       for z in range(c.size):
-        c.set(Pos(x, y, z), hue_to_colour((x * scales.x + y * scales.y + z * scales.z) * (360 / 6)))
+        c.set(Pos(x, y, z), hue_to_colour((offset + x * scales.x + y * scales.y + z * scales.z) * (360 / 6)))
   return c
 
 def make_colour_cube(hue_offset = 0):
@@ -30,6 +30,12 @@ def rotate_colour_cube(speed):
       yield make_colour_cube(hue_offset = i * pi / 180)
     yield True
 
+def scroll_diagonal_rainbow():
+  while True:
+    for i in range(6):
+      yield diagonal_rainbow(offset = i)
+    yield True
+
 if __name__ == "__main__":
   with Display() as d:
-    generators.generate(d, rotate_colour_cube(pi / 20))
+    generators.generate(d, scroll_diagonal_rainbow(), delay = 0.25)
