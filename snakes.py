@@ -38,7 +38,8 @@ def setup():
   snakes = [
       Snake(Pos(0, 0, 0), Colour.RED),
       Snake(Pos(SIZE - 1, 0, SIZE - 1), Colour.GREEN),
-      Snake(Pos(0, SIZE - 1, SIZE - 1), Colour.BLUE)
+      Snake(Pos(0, SIZE - 1, SIZE - 1), Colour.BLUE),
+      Snake(Pos(SIZE - 1, SIZE - 1, 0), Colour.WHITE),
   ]
   for i in range(SIZE):
     for s in snakes:
