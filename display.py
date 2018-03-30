@@ -33,8 +33,11 @@ Colour.BLACK = Colour((0, 0, 0))
 Colour.WHITE = Colour((BRIGHTNESS, BRIGHTNESS, BRIGHTNESS))
 
 Colour.RED_HUE = 0
+Colour.YELLOW_HUE = 60
 Colour.GREEN_HUE = 120
+Colour.CYAN_HUE = 180
 Colour.BLUE_HUE = 240
+Colour.MAGENTA_HUE = 300
 
 def hue_to_colour(hue, brightness=BRIGHTNESS):
   return Colour.fromFloats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
