@@ -40,8 +40,8 @@ def repeat(gen, times):
     yield True
 
 def sequence(gens, transition=None):
+  prev = None
   while True:
-    prev = None
     for i in range(len(gens)):
       if transition is not None and prev is not None:
         current = next(gens[i])
@@ -61,7 +61,6 @@ def sequence(gens, transition=None):
         if prev is not None:
           yield prev
         prev = val
-    yield prev
     yield True
 
 def reverse(gen):
@@ -73,6 +72,15 @@ def reverse(gen):
       vals.insert(0, val)
     for val in vals:
       yield val
+    yield True
+
+def slow(gen, frames = 2):
+  while True:
+    for val in gen:
+      if type(val) is bool:
+        break
+      for i in range(frames):
+        yield val
     yield True
 
 def debug(gen):
