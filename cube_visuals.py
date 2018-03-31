@@ -5,6 +5,7 @@ import line
 import rainbow
 import transitions
 import line_maps
+import corners
 
 if __name__ == "__main__":
   with Display() as d:
@@ -20,5 +21,6 @@ if __name__ == "__main__":
         generators.repeat(line.cycle(line.rainbow()), 2),
         line.scroll_out(line.rainbow()),
       ])),
+      generators.repeat(generators.slow(corners.corners()), 20),
     ]))
 
