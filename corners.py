@@ -60,6 +60,7 @@ def corners():
     newhue = random.choice([h for h in hues if h != hue])
     for c in flip(shrink_and_grow(hue, newhue), (newcorner & 4) == 4, (newcorner & 2) == 2, (newcorner & 1) == 1):
       yield c
+    yield draw_outline(Pos(0, 0, 0), Pos(SIZE - 1, SIZE - 1, SIZE - 1), hue_to_colour(newhue))
     hue = newhue
     corner = newcorner
     yield True
