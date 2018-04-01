@@ -64,15 +64,17 @@ def sequence(gens, transition=None):
     yield True
 
 def reverse(gen):
-  while True:
-    vals = []
-    for val in gen:
-      if type(val) is bool:
-        break
+  vals = []
+  for val in gen:
+    if type(val) is bool:
+      for v in vals:
+        yield v
+      vals = []
+      yield True
+    else:
       vals.insert(0, val)
-    for val in vals:
-      yield val
-    yield True
+  for v in vals:
+    yield v
 
 def slow(gen, frames = 2):
   while True:
