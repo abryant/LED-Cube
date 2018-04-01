@@ -28,6 +28,15 @@ class Keyboard:
     else:
       return ''
 
+  def wait_for_char(self, options=None):
+    while True:
+      read,_,_ = select([self.stdin_unbuffered], [], [])
+      if read != []:
+        c = self.stdin_unbuffered.read(1)
+        char = c.decode('ascii')
+        if options is None or char in options:
+          return char
+
   def get_last_char(self, options=None):
     char = ''
     while True:
