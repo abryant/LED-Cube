@@ -46,7 +46,7 @@ class Game:
     else:
       self.snake = self.snake[0:-1]
 
-def main():
+def play_game():
   with Display() as d:
     keyboard = Keyboard()
     while True:
@@ -71,6 +71,32 @@ def main():
         d.display(Cube().get_colours())
         time.sleep(0.1)
 
+def play_game_turn_based():
+  with Display() as d:
+    keyboard = Keyboard()
+    while True:
+      game = Game()
+      # consume any pending keyboard input
+      keyboard.get_last_char(options = key_directions.keys())
+      while True:
+        d.display(game.draw().get_colours())
+        while True:
+          char = keyboard.wait_for_char(options = key_directions.keys())
+          new_dir = key_directions[char]
+          if (new_dir.value + game.direction.value) != Pos(0, 0, 0):
+            game.direction = new_dir
+            break
+        if not game.can_advance():
+          break
+        game.advance()
+      print("score: " + str(len(game.snake)))
+      for i in range(5):
+        d.display(Cube(colour = Colour.RED).get_colours())
+        time.sleep(0.1)
+        d.display(Cube().get_colours())
+        time.sleep(0.1)
+
+
 
 if __name__ == "__main__":
-  main()
+  play_game_turn_based()
