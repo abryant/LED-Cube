@@ -39,6 +39,8 @@ Colour.CYAN_HUE = 180
 Colour.BLUE_HUE = 240
 Colour.MAGENTA_HUE = 300
 
+Colour.ALL_HUES = [Colour.RED_HUE, Colour.YELLOW_HUE, Colour.GREEN_HUE, Colour.CYAN_HUE, Colour.BLUE_HUE, Colour.MAGENTA_HUE]
+
 def hue_to_colour(hue, brightness=BRIGHTNESS):
   return Colour.fromFloats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
 
