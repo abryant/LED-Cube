@@ -35,3 +35,8 @@ def random_transition(start, end):
     functools.partial(scroll, Direction.UP),
     functools.partial(wipe, Direction.RIGHT),
   ])(start, end)
+
+def random_scroll_transition(start, end):
+  return random.choice([
+    functools.partial(scroll, d) for d in Direction
+  ])(start, end)
