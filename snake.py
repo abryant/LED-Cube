@@ -22,7 +22,10 @@ class Game:
 
   def make_fruit(self):
     all_positions = [Pos(x, y, z) for x in range(SIZE) for y in range(SIZE) for z in range(SIZE) if Pos(x, y, z) not in self.snake]
-    self.fruit = random.choice(all_positions)
+    if len(all_positions) > 0:
+      self.fruit = random.choice(all_positions)
+    else:
+      self.fruit = None
 
   def draw(self):
     c = Cube()
@@ -46,7 +49,7 @@ class Game:
     else:
       self.snake = self.snake[0:-1]
 
-def play_game():
+def play_game(get_next_move):
   with Display() as d:
     keyboard = Keyboard()
     while True:
@@ -55,48 +58,37 @@ def play_game():
       keyboard.get_last_char(options = key_directions.keys())
       while True:
         d.display(game.draw().get_colours())
-        time.sleep(1)
-        char = keyboard.get_last_char(options = key_directions.keys())
-        if char != '':
-          new_dir = key_directions[char]
-          if (new_dir.value + game.direction.value) != Pos(0, 0, 0):
-            game.direction = new_dir
+        game.direction = get_next_move(game, keyboard)
         if not game.can_advance():
           break
         game.advance()
+        if game.fruit is None:
+          # Nowhere left to place fruit: player wins
+          break
+      if game.fruit is None:
+        print("YOU WIN!")
       print("score: " + str(len(game.snake)))
       for i in range(5):
-        d.display(Cube(colour = Colour.RED).get_colours())
+        d.display(Cube(colour = (Colour.GREEN if game.fruit is None else Colour.RED)).get_colours())
         time.sleep(0.1)
         d.display(Cube().get_colours())
         time.sleep(0.1)
 
-def play_game_turn_based():
-  with Display() as d:
-    keyboard = Keyboard()
-    while True:
-      game = Game()
-      # consume any pending keyboard input
-      keyboard.get_last_char(options = key_directions.keys())
-      while True:
-        d.display(game.draw().get_colours())
-        while True:
-          char = keyboard.wait_for_char(options = key_directions.keys())
-          new_dir = key_directions[char]
-          if (new_dir.value + game.direction.value) != Pos(0, 0, 0):
-            game.direction = new_dir
-            break
-        if not game.can_advance():
-          break
-        game.advance()
-      print("score: " + str(len(game.snake)))
-      for i in range(5):
-        d.display(Cube(colour = Colour.RED).get_colours())
-        time.sleep(0.1)
-        d.display(Cube().get_colours())
-        time.sleep(0.1)
+def get_next_move_time_based(game, keyboard):
+  time.sleep(1)
+  char = keyboard.get_last_char(options = key_directions.keys())
+  if char != '':
+    new_dir = key_directions[char]
+    if (new_dir.value + game.direction.value) != Pos(0, 0, 0):
+      return new_dir
+  return game.direction
 
-
+def get_next_move_turn_based(game, keyboard):
+  while True:
+    char = keyboard.wait_for_char(options = key_directions.keys())
+    new_dir = key_directions[char]
+    if (new_dir.value + game.direction.value) != Pos(0, 0, 0):
+      return new_dir
 
 if __name__ == "__main__":
-  play_game_turn_based()
+  play_game(get_next_move = get_next_move_turn_based)
