@@ -33,6 +33,7 @@ def extend():
     for c in compress(cube, choose_dirs()):
       yield c
     yield Cube()
+    yield True
 
 
 def main():

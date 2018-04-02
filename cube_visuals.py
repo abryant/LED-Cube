@@ -6,6 +6,9 @@ import rainbow
 import transitions
 import line_maps
 import corners
+import extend
+import flatten
+import snakes
 
 if __name__ == "__main__":
   with Display() as d:
@@ -21,6 +24,9 @@ if __name__ == "__main__":
         generators.repeat(line.cycle(line.rainbow()), 2),
         line.scroll_out(line.rainbow()),
       ])),
-      generators.repeat(generators.slow(corners.corners()), 20),
+      generators.repeat(generators.slow(corners.corners()), 10),
+      generators.repeat(extend.extend(), 10),
+      flatten.flatten(iterations = 10),
+      generators.slow(snakes.snakes(frame_limit = 100)),
     ]))
 

@@ -34,13 +34,13 @@ class Snake:
     for p in self.snake:
       cube.set(p, self.colour)
 
-def setup():
+def setup(number_of_snakes):
   snakes = [
       Snake(Pos(0, 0, 0), Colour.RED),
       Snake(Pos(SIZE - 1, 0, SIZE - 1), Colour.GREEN),
       Snake(Pos(0, SIZE - 1, SIZE - 1), Colour.BLUE),
       Snake(Pos(SIZE - 1, SIZE - 1, 0), Colour.WHITE),
-  ]
+  ][:number_of_snakes]
   for i in range(SIZE):
     for s in snakes:
       avoid = [p for avoid_snake in snakes for p in avoid_snake.snake]
@@ -51,16 +51,20 @@ def setup():
       s.advance(p, grow = True)
   return snakes
 
-def snakes():
+def snakes(frame_limit = None, number_of_snakes = 3):
   snakes = None
   while snakes is None:
-    snakes = setup()
+    snakes = setup(number_of_snakes)
+  i = 0
   while True:
     c = Cube()
     for s in snakes:
       s.draw(c)
     yield c
-    yield c
+    i += 1
+    if frame_limit is not None and i == frame_limit:
+      i = 0
+      yield True
     for s in snakes:
       avoid = [p for avoid_snake in snakes for p in avoid_snake.snake]
       p = s.get_next_position(avoid)
@@ -71,7 +75,7 @@ def snakes():
 
 def main():
   with Display() as d:
-    generators.generate(d, snakes())
+    generators.generate(d, generators.slow(snakes()))
 
 if __name__ == "__main__":
   main()
