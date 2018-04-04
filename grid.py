@@ -1,4 +1,3 @@
-from config import SIZE
 from display import *
 from position import *
 import generators

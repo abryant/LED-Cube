@@ -1,5 +1,4 @@
 import generators
-from config import SIZE
 from display import *
 from cube import *
 import random

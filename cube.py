@@ -5,7 +5,6 @@
 # 2048: a 3D game of 2048 with LED brightness and colour indicating number, with cube rotations as moves (needs a rotation animation)
 #
 import generators
-from config import SIZE
 from display import *
 from position import *
 

@@ -1,4 +1,3 @@
-from config import SIZE
 from cube import *
 from display import *
 import random

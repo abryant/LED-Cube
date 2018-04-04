@@ -1,4 +1,3 @@
-from config import SIZE
 from display import *
 import generators
 from colorsys import hsv_to_rgb

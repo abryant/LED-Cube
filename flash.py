@@ -1,5 +1,4 @@
 from cube import *
-from config import SIZE
 from display import *
 
 def flash():

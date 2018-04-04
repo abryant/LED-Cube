@@ -1,5 +1,5 @@
 from enum import Enum
-from config import SIZE
+from display import SIZE
 
 class Pos:
   def __init__(self, x, y, z):

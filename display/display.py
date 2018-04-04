@@ -1,7 +1,6 @@
 from time import sleep
 from colorsys import hsv_to_rgb
-import config
-from config import BRIGHTNESS, DISPLAY_FILE
+from .config import BRIGHTNESS, DISPLAY_FILE
 import os
 
 class Colour:
