@@ -8,11 +8,11 @@ LEDS = 64
 def fade(colours, ratio):
   return [Colour((colours[i].r * ratio, colours[i].g * ratio, colours[i].b * ratio)) for i in range(len(colours))]
 
-def random_static(num_leds, brightness=20):
+def random_static(num_leds, brightness=BRIGHTNESS):
   while True:
     yield [Colour(hsv_to_rgb(random.randint(0, 359) / 360, 1, random.randint(1, brightness))) for i in range(num_leds)]
 
-def rainbow(num_leds = LEDS, brightness = 20):
+def rainbow(num_leds = LEDS, brightness = BRIGHTNESS):
   return [Colour(hsv_to_rgb(i / num_leds, 1, brightness)) for i in range(num_leds)]
 
 def cycle(colours, dir=1):
@@ -85,7 +85,7 @@ def scroll_past(colours, dir=1):
 def binary_count(num_leds = LEDS):
   i = 0
   while True:
-    yield [Colour.BLACK if ((i >> l) & 0x1) == 0 else Colour((20, 20, 20)) for l in range(num_leds)]
+    yield [Colour.BLACK if ((i >> l) & 0x1) == 0 else Colour((BRIGHTNESS, BRIGHTNESS, BRIGHTNESS)) for l in range(num_leds)]
     i += 1
     if i == (1 << num_leds):
       yield True

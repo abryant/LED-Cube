@@ -31,7 +31,7 @@ class Game:
     c.set(self.fruit, Colour.RED)
     c.set(self.snake[0], Colour.WHITE)
     for i, p in enumerate(self.snake[1:]):
-      c.set(p, Colour((0, 20 - i * (18 / (len(self.snake) - 1)), 0)))
+      c.set(p, Colour((0, BRIGHTNESS - 0.8 * i * (BRIGHTNESS / (len(self.snake) - 1)), 0)))
     return c
 
   def get_next_position(self):
