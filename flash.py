@@ -3,8 +3,8 @@ from display import *
 
 def flash():
   while True:
-    yield Cube(colour = Colour.WHITE)
-    yield Cube(colour = Colour.BLACK)
+    yield Cube(colour = Colour.white())
+    yield Cube(colour = Colour.black())
     yield True
 
 if __name__ == "__main__":

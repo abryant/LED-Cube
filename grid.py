@@ -97,9 +97,9 @@ def single_frame(grid):
 if __name__ == "__main__":
   with Display() as d:
     g = Grid()
-    g.fill_line(Direction.UP, 0, Colour.GREEN)
-    g.fill_line(Direction.DOWN, 0, Colour.RED)
-    g.fill_line(Direction.LEFT, 0, Colour.BLUE)
-    g.fill_line(Direction.RIGHT, 0, Colour.WHITE)
-    g.grid[0][0] = Colour.RED
+    g.fill_line(Direction.UP, 0, Colour.green())
+    g.fill_line(Direction.DOWN, 0, Colour.red())
+    g.fill_line(Direction.LEFT, 0, Colour.blue())
+    g.fill_line(Direction.RIGHT, 0, Colour.white())
+    g.grid[0][0] = Colour.red()
     d.display(g.get_colours())

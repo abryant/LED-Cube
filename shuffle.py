@@ -5,10 +5,10 @@ import random
 
 def init_cube():
   c = Cube()
-  c.fill_layer(Direction.UP, 0, Colour.RED)
-  c.fill_layer(Direction.UP, 1, Colour.GREEN)
-  c.fill_layer(Direction.UP, 2, Colour.BLUE)
-  c.fill_layer(Direction.UP, 3, Colour.WHITE)
+  c.fill_layer(Direction.UP, 0, Colour.red())
+  c.fill_layer(Direction.UP, 1, Colour.green())
+  c.fill_layer(Direction.UP, 2, Colour.blue())
+  c.fill_layer(Direction.UP, 3, Colour.white())
   return c
 
 def randomize_cube():

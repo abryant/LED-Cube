@@ -85,7 +85,7 @@ def scroll_past(colours, dir=1):
 def binary_count(num_leds = LEDS):
   i = 0
   while True:
-    yield [Colour.BLACK if ((i >> l) & 0x1) == 0 else Colour((BRIGHTNESS, BRIGHTNESS, BRIGHTNESS)) for l in range(num_leds)]
+    yield [Colour.BLACK if ((i >> l) & 0x1) == 0 else Colour.white() for l in range(num_leds)]
     i += 1
     if i == (1 << num_leds):
       yield True
@@ -105,19 +105,19 @@ if __name__ == "__main__":
   with Display() as d:
     # For testing the LEDs:
     #generators.generate(d, generators.sequence([
-    #  scroll_pixel(Colour.RED),
-    #  scroll_pixel(Colour.GREEN),
-    #  scroll_pixel(Colour.BLUE),
+    #  scroll_pixel(Colour.red()),
+    #  scroll_pixel(Colour.green()),
+    #  scroll_pixel(Colour.blue()),
     #]))
     generators.generate(d, generators.shuffle([
       mirror(reverse(binary_count(LEDS // 2))),
       knight_rider(10),
-      scroll_past([Colour.RED for i in range(LEDS)]),
-      scroll_past([Colour.GREEN for i in range(LEDS)]),
-      scroll_past([Colour.BLUE for i in range(LEDS)]),
-      scroll_past([Colour.CYAN for i in range(LEDS)], dir=-1),
-      scroll_past([Colour.MAGENTA for i in range(LEDS)], dir=-1),
-      scroll_past([Colour.YELLOW for i in range(LEDS)], dir=-1),
+      scroll_past([Colour.red() for i in range(LEDS)]),
+      scroll_past([Colour.green() for i in range(LEDS)]),
+      scroll_past([Colour.blue() for i in range(LEDS)]),
+      scroll_past([Colour.cyan() for i in range(LEDS)], dir=-1),
+      scroll_past([Colour.magenta() for i in range(LEDS)], dir=-1),
+      scroll_past([Colour.yellow() for i in range(LEDS)], dir=-1),
       generators.sequence([
         scroll_in(rainbow()),
         generators.repeat(cycle(rainbow()), 5),

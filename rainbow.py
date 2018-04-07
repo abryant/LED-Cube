@@ -20,7 +20,7 @@ def make_colour_cube(hue_offset = 0):
         hue = ((atan2(((SIZE - 1) / 2) - z, ((SIZE - 1) / 2) - x) + hue_offset) / 2 / pi) % 1
         sat = 1 - (min([x, z, SIZE - 1 - x, SIZE - 1 - z]) / ((SIZE - 1) // 2))
         val = (20 / 255) * (y + 0.25) / SIZE
-        cube.set(Pos(x, y, z), Colour.fromFloats(colorsys.hsv_to_rgb(hue, sat, val)))
+        cube.set(Pos(x, y, z), Colour.from_floats(colorsys.hsv_to_rgb(hue, sat, val)))
   return cube
 
 def rotate_colour_cube(speed):

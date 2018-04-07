@@ -22,7 +22,7 @@ def marquee(text, colours):
 
 def main():
   with Display() as d:
-    generators.generate(d, marquee("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789", [Colour.RED, Colour.GREEN, Colour.BLUE]))
+    generators.generate(d, marquee("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789", [Colour.red(), Colour.green(), Colour.blue()]))
 
 if __name__ == "__main__":
   main()

@@ -28,10 +28,10 @@ class Game:
 
   def draw(self):
     c = Cube()
-    c.set(self.fruit, Colour.RED)
-    c.set(self.snake[0], Colour.WHITE)
+    c.set(self.fruit, Colour.red())
+    c.set(self.snake[0], Colour.white())
     for i, p in enumerate(self.snake[1:]):
-      c.set(p, Colour((0, BRIGHTNESS - 0.8 * i * (BRIGHTNESS / (len(self.snake) - 1)), 0)))
+      c.set(p, Colour((0, Colour.brightness - 0.8 * i * (Colour.brightness / (len(self.snake) - 1)), 0)))
     return c
 
   def get_next_position(self):
@@ -68,7 +68,7 @@ def play_game(get_next_move):
         print("YOU WIN!")
       print("score: " + str(len(game.snake)))
       for i in range(5):
-        d.display(Cube(colour = (Colour.GREEN if game.fruit is None else Colour.RED)).get_colours())
+        d.display(Cube(colour = (Colour.green() if game.fruit is None else Colour.red())).get_colours())
         time.sleep(0.1)
         d.display(Cube().get_colours())
         time.sleep(0.1)

@@ -228,8 +228,8 @@ def scroll_past(cube, direction):
 if __name__ == "__main__":
   with Display() as d:
     generators.generate(d, generators.sequence([
-      scroll_past(Cube(SIZE, Colour.RED), Direction.UP),
-      scroll_past(Cube(SIZE, Colour.GREEN), Direction.RIGHT),
-      scroll_past(Cube(SIZE, Colour.BLUE), Direction.FRONT),
+      scroll_past(Cube(SIZE, Colour.red()), Direction.UP),
+      scroll_past(Cube(SIZE, Colour.green()), Direction.RIGHT),
+      scroll_past(Cube(SIZE, Colour.blue()), Direction.FRONT),
     ]), delay = 0.5)
 

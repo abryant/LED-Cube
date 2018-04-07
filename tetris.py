@@ -25,7 +25,7 @@ j_shape = [Pos(0, 0, 0),
 
 # Each shape gets a consistent colour.
 all_shapes = [z_shape, s_shape, j_shape, i_shape, t_shape, o_shape, l_shape]
-shape_colours = [Colour.RED, Colour.GREEN, Colour.BLUE, Colour.CYAN, Colour.MAGENTA, Colour.YELLOW, Colour.WHITE]
+shape_colours = [Colour.red(), Colour.green(), Colour.blue(), Colour.cyan(), Colour.magenta(), Colour.yellow(), Colour.white()]
 
 def rotate_shape(shape):
   for xrot in range(random.randint(0, 3)):

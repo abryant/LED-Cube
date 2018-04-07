@@ -2,10 +2,19 @@ from colorsys import hsv_to_rgb
 from .config import BRIGHTNESS
 
 class Colour:
+  brightness = BRIGHTNESS
+  RED_HUE = 0
+  YELLOW_HUE = 60
+  GREEN_HUE = 120
+  CYAN_HUE = 180
+  BLUE_HUE = 240
+  MAGENTA_HUE = 300
+  ALL_HUES = [RED_HUE, YELLOW_HUE, GREEN_HUE, CYAN_HUE, BLUE_HUE, MAGENTA_HUE]
+
   def __init__(self, rgb):
     self.r, self.g, self.b = int(rgb[0]), int(rgb[1]), int(rgb[2])
 
-  def fromFloats(rgb):
+  def from_floats(rgb):
     return Colour((rgb[0]*255, rgb[1]*255, rgb[2]*255))
 
   def __repr__(self):
@@ -20,24 +29,32 @@ class Colour:
   def __ne__(self, other):
     return not self.__eq__(other)
 
-Colour.RED = Colour((BRIGHTNESS, 0, 0))
-Colour.YELLOW = Colour((BRIGHTNESS, BRIGHTNESS, 0))
-Colour.GREEN = Colour((0, BRIGHTNESS, 0))
-Colour.CYAN = Colour((0, BRIGHTNESS, BRIGHTNESS))
-Colour.BLUE = Colour((0, 0, BRIGHTNESS))
-Colour.MAGENTA = Colour((BRIGHTNESS, 0, BRIGHTNESS))
+  def red():
+    return Colour((Colour.brightness, 0, 0))
+
+  def yellow():
+    return Colour((Colour.brightness, Colour.brightness, 0))
+
+  def green():
+    return Colour((0, Colour.brightness, 0))
+
+  def cyan():
+    return Colour((0, Colour.brightness, Colour.brightness))
+
+  def blue():
+    return Colour((0, 0, Colour.brightness))
+
+  def magenta():
+    return Colour((Colour.brightness, 0, Colour.brightness))
+
+  def black():
+    return Colour((0, 0, 0))
+
+  def white():
+    return Colour((Colour.brightness, Colour.brightness, Colour.brightness))
+
 Colour.BLACK = Colour((0, 0, 0))
-Colour.WHITE = Colour((BRIGHTNESS, BRIGHTNESS, BRIGHTNESS))
 
-Colour.RED_HUE = 0
-Colour.YELLOW_HUE = 60
-Colour.GREEN_HUE = 120
-Colour.CYAN_HUE = 180
-Colour.BLUE_HUE = 240
-Colour.MAGENTA_HUE = 300
-
-Colour.ALL_HUES = [Colour.RED_HUE, Colour.YELLOW_HUE, Colour.GREEN_HUE, Colour.CYAN_HUE, Colour.BLUE_HUE, Colour.MAGENTA_HUE]
-
-def hue_to_colour(hue, brightness=BRIGHTNESS):
-  return Colour.fromFloats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
+def hue_to_colour(hue, brightness=Colour.brightness):
+  return Colour.from_floats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
 

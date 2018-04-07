@@ -9,7 +9,7 @@ def single_frame(colours):
 if __name__ == "__main__":
   with Display() as d:
     generators.generate(d, generators.sequence([
-      single_frame([Colour.RED]),
-      single_frame([Colour.GREEN]),
-      single_frame([Colour.BLUE])
+      single_frame([Colour.red()]),
+      single_frame([Colour.green()]),
+      single_frame([Colour.blue()])
     ]), delay=0.5)

@@ -4,13 +4,11 @@ import generators
 import transitions
 import random
 
-hues = [Colour.RED_HUE, Colour.YELLOW_HUE, Colour.GREEN_HUE, Colour.CYAN_HUE, Colour.BLUE_HUE, Colour.MAGENTA_HUE]
-
 def random_cube():
   c = Cube()
   for i in range(20):
     p = Pos(random.randint(0, SIZE - 1), random.randint(0, SIZE - 1), random.randint(0, SIZE - 1))
-    c.set(p, hue_to_colour(random.choice(hues)))
+    c.set(p, hue_to_colour(random.choice(Colour.ALL_HUES)))
   return c
 
 def combine_layers(layer1, layer2):
