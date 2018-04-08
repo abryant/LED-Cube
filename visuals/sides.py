@@ -1,6 +1,6 @@
 import generators
 from display import *
-from cube import *
+from .cube import *
 import random
 
 def get_layer_coord(direction, index):

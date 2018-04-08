@@ -1,10 +1,10 @@
 # Mappings from line to cube.
-from cube import *
+from .cube import *
 from display import *
-import line
-import rotate
 import generators
 import functools
+from . import line
+from . import rotate
 
 def control_order(colours):
   assert len(colours) == (SIZE * SIZE * SIZE)

@@ -1,5 +1,5 @@
 from display import *
-from position import *
+from .position import *
 import generators
 from colorsys import hsv_to_rgb
 import random

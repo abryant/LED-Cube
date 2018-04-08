@@ -1,10 +1,10 @@
 from display import *
-from grid import *
-from position import *
+from .grid import *
+from .position import *
 from font.font import draw_character
 import generators
 import functools
-import grid_transitions
+from . import grid_transitions
 
 def display_character(c, colour, times = 10):
   while True:

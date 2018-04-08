@@ -1,6 +1,6 @@
-from cube import *
+from .cube import *
 from display import *
-import rainbow
+from . import rainbow
 import generators
 
 def rotate(up_direction, steps, cube):

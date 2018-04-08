@@ -6,7 +6,7 @@
 #
 import generators
 from display import *
-from position import *
+from .position import *
 
 def get_perpendicular_direction(dir1, dir2):
   if (dir1 == Direction.UP or dir1 == Direction.DOWN) and (dir2 == Direction.LEFT or dir2 == Direction.RIGHT):

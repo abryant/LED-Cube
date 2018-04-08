@@ -1,6 +1,6 @@
 import generators
 from display import *
-from cube import *
+from .cube import *
 import random
 
 def matrix_line():

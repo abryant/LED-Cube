@@ -1,5 +1,4 @@
 from time import sleep
-from colorsys import hsv_to_rgb
 import random
 
 def get_colours(val):

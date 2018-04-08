@@ -1,7 +1,7 @@
-from cube import *
+from .cube import *
 from display import *
 import generators
-import transitions
+from . import transitions
 import random
 
 def random_cube():

@@ -1,4 +1,4 @@
-from cube import *
+from .cube import *
 from display import *
 
 def flash():

@@ -1,4 +1,4 @@
-from cube import *
+from visuals.cube import *
 from display import *
 from keyboard import *
 import random

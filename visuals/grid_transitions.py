@@ -1,4 +1,4 @@
-from grid import *
+from .grid import *
 from display import *
 import random
 import generators
