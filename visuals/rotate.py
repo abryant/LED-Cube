@@ -3,7 +3,7 @@ from display import *
 from . import rainbow
 import generators
 
-def rotate(up_direction, steps, cube):
+def rotate_steps(up_direction, steps, cube):
   """Rotates a cube around the given up_direction, by the given number of 90 degree steps"""
   c = Cube(cube.size)
   for layer in range(cube.size):
@@ -49,14 +49,16 @@ def make_rotated_hue_cube():
     rotate_layer(cube, Direction.UP, 0, 1)
   return cube
 
-
-if __name__ == "__main__":
+def rotate():
   cube = rainbow.make_colour_cube()
-  with Display() as d:
-    generators.generate(d, generators.sequence([
+  return generators.sequence([
       generators.repeat(rotate_cube(cube, Direction.UP), 5),
       generators.repeat(rotate_cube(cube, Direction.LEFT), 5),
       generators.repeat(rotate_cube(cube, Direction.FRONT), 5),
-    ]))
+  ])
+
+if __name__ == "__main__":
+  with Display() as d:
+    generators.generate(d, rotate())
 
 
