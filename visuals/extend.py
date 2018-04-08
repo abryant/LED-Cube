@@ -22,6 +22,7 @@ def compress(cube, dirs):
     for j in range(SIZE - 1, 0, -1):
       c.fill_layer(dirs[i], j, Colour.BLACK)
       yield c.copy()
+    yield c.copy()
 
 def extend():
   yield Cube()
