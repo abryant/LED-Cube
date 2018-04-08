@@ -1,0 +1,43 @@
+<html>
+<head>
+  <script type='application/javascript'>
+    function send(cubeName, command) {
+      var url = '/api/send/' + cubeName + '/' + command;
+      var request = new XMLHttpRequest();
+      request.open('POST', url, true);
+      request.send(null);
+    }
+    function setSpeed(cubeName, speed) {
+      if (speed <= 0) {
+        return;
+      }
+      var delay = 1.0 / speed;
+      send(cubeName, 'delay=' + delay);
+    }
+    function start(cubeName, visualization) {
+      send(cubeName, 'start:' + visualization);
+    }
+    function stop(cubeName) {
+      send(cubeName, 'stop');
+    }
+  </script>
+</head>
+<body>
+  <h1>Hello, Cube!</h1>
+  <button type='button' onclick='start("123", "corners")'>Corners</button><br/>
+  <button type='button' onclick='start("123", "cube_visuals")'>Cube Visuals</button><br/>
+  <button type='button' onclick='start("123", "extend")'>Extend</button><br/>
+  <button type='button' onclick='start("123", "flash")'>Flash</button><br/>
+  <button type='button' onclick='start("123", "flatten")'>Flatten</button><br/>
+  <button type='button' onclick='start("123", "matrix")'>Matrix</button><br/>
+  <button type='button' onclick='start("123", "pulse")'>Pulse</button><br/>
+  <button type='button' onclick='start("123", "rainbow")'>Rainbow</button><br/>
+  <button type='button' onclick='start("123", "rotate")'>Rotate</button><br/>
+  <button type='button' onclick='start("123", "shuffle")'>Shuffle</button><br/>
+  <button type='button' onclick='start("123", "sides")'>Sides</button><br/>
+  <button type='button' onclick='start("123", "snakes")'>Snakes</button><br/>
+  <button type='button' onclick='start("123", "tetris")'>Tetris</button><br/>
+  <button type='button' onclick='stop("123")'>Stop</button><br/>
+  Speed: 1Hz <input type='range' min='1' max='40' value='20' onchange='setSpeed("123", this.value)'></input> 40Hz
+</body>
+</html>
