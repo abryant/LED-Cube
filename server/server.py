@@ -50,12 +50,12 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       names = []
       with control_queue_lock:
         names = [k for k in cube_control_queues]
-      self.wfile.write(b'{cubes:[')
+      self.wfile.write(b'{"cubes":[')
       for i in range(len(names)):
-        self.wfile.write(b'"' + bytes(names[i], encoding="UTF-8") + '"')
+        self.wfile.write(b'"' + bytes(names[i], encoding="UTF-8") + b'"')
         if i != len(names) - 1:
           self.wfile.write(b',')
-      self.wfile.write(b']}')
+      self.wfile.write(b']}\n')
     elif self.path in path_whitelist:
       filename = self.path
       if filename == '/':
