@@ -15,6 +15,13 @@ def random_static(num_leds, brightness=BRIGHTNESS):
 def rainbow(num_leds = LEDS, brightness = BRIGHTNESS):
   return [Colour(hsv_to_rgb(i / num_leds, 1, brightness)) for i in range(num_leds)]
 
+def scrolling_rainbow(num_leds = LEDS):
+ return generators.sequence([
+      scroll_in(rainbow(num_leds = num_leds)),
+      generators.repeat(cycle(rainbow(num_leds = num_leds)), 2),
+      scroll_out(rainbow(num_leds = num_leds)),
+    ])
+
 def cycle(colours, dir=1):
   i = 0
   while True:

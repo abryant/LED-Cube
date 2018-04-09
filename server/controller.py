@@ -1,7 +1,7 @@
 from queue import Queue, Empty
 from time import sleep
 import generators
-from visuals import corners, cube_visuals, extend, flash, flatten, matrix, pulse, rainbow, rotate, shuffle, sides, snakes, tetris
+from visuals import corners, cube_visuals, extend, flash, flatten, line, matrix, pulse, rainbow, rotate, shuffle, sides, snakes, tetris
 
 GENERATORS = {
   'corners': corners.corners,
@@ -9,6 +9,7 @@ GENERATORS = {
   'extend': extend.extend,
   'flash': flash.flash,
   'flatten': flatten.flatten,
+  'line': line.scrolling_rainbow,
   'matrix': matrix.matrix,
   'pulse': pulse.pulse,
   'rainbow': rainbow.scroll_diagonal_rainbow,
