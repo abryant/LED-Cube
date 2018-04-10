@@ -24,20 +24,22 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     size_t n = Serial.readBytes(startBuf, 4);
-    Serial.write(startBuf, 3);
     if (n < 4) {
       return;
     }
     if (startBuf[0] != 'G' || startBuf[1] != 'O' || startBuf[2] != ':') {
       return;
     }
-    
+
     uint8_t len = startBuf[3];
     uint8_t *data = (uint8_t*) malloc(len);
     n = Serial.readBytes(data, len);
     if (n != len) {
       return;
     }
+    // Signal to the controller that we're ready for more data.
+    Serial.write(startBuf, 3);
+
     display(data, len);
     free(data);
   }

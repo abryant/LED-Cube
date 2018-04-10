@@ -28,6 +28,8 @@ class Display:
       data[4+3*i+2] = colours[i].b
     self.writefile.write(data)
     self.writefile.flush()
+    # Wait for the cube to finish sending the data to the LEDs.
+    # It sends back the "GO:" we sent it when it is ready for more data.
     self.readfile.read(3)
 
   def __enter__(self):
