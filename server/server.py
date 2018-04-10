@@ -89,7 +89,7 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.end_headers()
 
 
-def main(port = 8080):
+def main(port = 2823):
   server_address = ('', port)
   httpd = Server(server_address, CubeRequestHandler)
   httpd.serve_forever()
