@@ -5,7 +5,7 @@ from visuals import corners, cube_visuals, extend, flash, flatten, line, matrix,
 
 GENERATORS = {
   'corners': corners.corners,
-  'cube_visuals': cube_visuals.cube_visuals,
+  'demo': cube_visuals.cube_visuals,
   'extend': extend.extend,
   'flash': flash.flash,
   'flatten': flatten.flatten,
@@ -16,7 +16,7 @@ GENERATORS = {
   'rotate': rotate.rotate,
   'shuffle': shuffle.shuffle,
   'sides': sides.sides,
-  'snakes': snakes.snakes,
+  'snakes': lambda: generators.slow(snakes.snakes()),
   'tetris': tetris.tetris,
 }
 
