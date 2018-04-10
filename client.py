@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from client import main
 import sys
 
