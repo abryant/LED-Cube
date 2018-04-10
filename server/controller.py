@@ -89,7 +89,7 @@ class Controller:
         pass
       return
     if command.startswith('start:'):
-      name = command[len('start:'):]
+      name = command[len('start:'):].lower()
       if name in GENERATORS:
         self.current_generator = GENERATORS[name]()
       return
