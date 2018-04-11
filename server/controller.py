@@ -28,6 +28,7 @@ class Controller:
     self.brightness = 50
     self.current_generator = None
     self.stopped = False
+    self.listeners = []
 
   def send(self, data):
     if type(data) is str:
@@ -36,24 +37,26 @@ class Controller:
     self.file.flush()
 
   def control_cube(self):
-    self.send('Controlling...\n')
-    while True:
-      if self.current_generator is None:
-        command = self.queue.get()
-        self.process_command(command)
-      else:
-        try:
-          command = self.queue.get_nowait()
-          self.process_command(command)
-        except Empty:
-          pass
-      if self.stopped:
-        return
-      if self.current_generator is not None:
-        self.send_frame()
-        sleep(self.delay)
-      else:
-        self.send('.\n')
+    try:
+      self.send('Controlling...\n')
+      while True:
+        if self.current_generator is None:
+          entry = self.queue.get()
+          self.process_command(entry)
+        else:
+          try:
+            entry = self.queue.get_nowait()
+            self.process_command(entry)
+          except Empty:
+            pass
+        if self.stopped:
+          return
+        if self.current_generator is not None:
+          self.send_frame()
+          sleep(self.delay)
+    finally:
+      for l in self.listeners:
+        l.put(b'quit')
 
   def send_frame(self):
     try:
@@ -62,15 +65,24 @@ class Controller:
         frame = generators.get_colours(frame)
         if type(frame) is list:
           frame_bytes = bytes([b for c in frame for b in [c.r, c.g, c.b]])
-          self.send(b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + frame_bytes + b'\n')
+          data = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + frame_bytes + b'\n'
+          self.send(data)
+          for l in self.listeners:
+            l.put(data)
           return
     except StopIteration:
       self.current_generator = None
 
-  def process_command(self, command):
+  def process_command(self, entry):
+    command = entry['command']
     if command == 'quit':
       self.send('Quitting...\n')
+      for l in self.listeners:
+        l.put(b'quit')
       self.stopped = True
+      return
+    if command == 'listen':
+      self.listeners.append(entry['data_queue'])
       return
     if command.startswith('delay=') and len(command) > len('delay='):
       try:

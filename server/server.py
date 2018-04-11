@@ -30,7 +30,7 @@ def send_to_cube(name, command):
   with control_queue_lock:
     if name not in cube_control_queues:
       return False
-    cube_control_queues[name].put(command)
+    cube_control_queues[name].put({'command': command})
     return True
 
 class Server(ThreadingMixIn, HTTPServer):
@@ -43,6 +43,9 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Content-Type', 'text/plain')
       self.end_headers()
       start_cube_controller(self.path[len('/api/cube/'):], self.wfile)
+    elif self.path.startswith('/api/listen/') and len(self.path) > len('/api/listen/'):
+      name = self.path[len('/api/listen/'):]
+      self.listen_to_cube(name)
     elif self.path == '/api/list-cubes':
       self.send_response(200)
       self.send_header('Content-Type', 'application/json')
@@ -87,6 +90,29 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
     else:
       self.send_response(404)
       self.end_headers()
+
+  def listen_to_cube(self, name):
+    data_queue = Queue()
+    cube_exists = False
+    with control_queue_lock:
+      if name in cube_control_queues:
+        cube_control_queues[name].put({'command': 'listen', 'data_queue': data_queue})
+        cube_exists = True
+    if not cube_exists:
+      self.send_response(500)
+      self.send_header('Content-Type', 'text/plain')
+      self.end_headers()
+      self.wfile.write(b'Failed to listen to ' + bytes(name, encoding="UTF-8") + b'\n')
+      return
+    self.send_response(200)
+    self.send_header('Content-Type', 'text/plain')
+    self.end_headers()
+    while True:
+      data = data_queue.get()
+      if data == b'quit':
+        return
+      self.wfile.write(data)
+      self.wfile.flush()
 
 
 def main(port = 2823):
