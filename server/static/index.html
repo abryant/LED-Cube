@@ -21,6 +21,9 @@
     function stop() {
       send('stop');
     }
+    function disconnect() {
+      send('quit');
+    }
     function getCubeNames() {
       var request = new XMLHttpRequest();
       request.open('GET', '/api/list-cubes', true);
@@ -73,6 +76,7 @@
   <button type='button' onclick='start("snakes")'>Snakes</button><br/>
   <button type='button' onclick='start("tetris")'>Tetris</button><br/>
   <button type='button' onclick='stop()'>Stop</button><br/>
+  <button type='button' onclick='disconnect()'>Disconnect</button><br/>
   Speed: 1Hz <input type='range' min='1' max='40' value='20' onchange='setSpeed(this.value)'></input> 40Hz
 </body>
 </html>
