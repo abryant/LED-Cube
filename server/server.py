@@ -16,7 +16,7 @@ def start_cube_controller(name, file):
   control_queue = Queue()
   with control_queue_lock:
     if name in cube_control_queues:
-      file.write(b'Cube already exists')
+      file.write(b'Cube already exists\n')
       return
     cube_control_queues[name] = control_queue
   try:
@@ -86,7 +86,7 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
         self.send_response(500)
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
-        self.wfile.write(bytes("Failed to send to " + name, encoding="UTF-8"))
+        self.wfile.write(bytes("Failed to send to " + name + "\n", encoding="UTF-8"))
     else:
       self.send_response(404)
       self.end_headers()
