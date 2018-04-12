@@ -25,8 +25,11 @@ def process_line(infile, display):
       b = data[3*i + 2]
       colours.append(Colour((r, g, b)))
     display.display(colours)
-  while infile.read(1) != b'\n':
-    pass
+  c = infile.read(1)
+  while c != b'\n' and c != b'':
+    c = infile.read(1)
+  if c == b'':
+    raise EOFError()
 
 def main(url):
   with Display() as d:
