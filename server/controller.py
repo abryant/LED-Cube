@@ -41,8 +41,12 @@ class Controller:
       self.send('Controlling...\n')
       while True:
         if self.current_generator is None:
-          entry = self.queue.get()
-          self.process_command(entry)
+          try:
+            entry = self.queue.get(timeout = 60)
+            self.process_command(entry)
+          except Empty:
+            # Send a blank line whenever we time out, to stop the connection from dropping.
+            self.send(b'\n')
         else:
           try:
             entry = self.queue.get_nowait()
