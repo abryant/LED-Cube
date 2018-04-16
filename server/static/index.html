@@ -1,82 +1,38 @@
+<!doctype html>
 <html>
 <head>
-  <script type='application/javascript'>
-    var currentCube = '';
-    function send(command) {
-      var url = '/api/send/' + currentCube + '/' + command;
-      var request = new XMLHttpRequest();
-      request.open('POST', url, true);
-      request.send(null);
-    }
-    function setSpeed(speed) {
-      if (speed <= 0) {
-        return;
-      }
-      var delay = 1.0 / speed;
-      send('delay=' + delay);
-    }
-    function start(visualization) {
-      send('start:' + visualization);
-    }
-    function stop() {
-      send('stop');
-    }
-    function disconnect() {
-      send('quit');
-    }
-    function getCubeNames() {
-      var request = new XMLHttpRequest();
-      request.open('GET', '/api/list-cubes', true);
-      request.onload = function() {
-        if (this.status == 200) {
-          updateCubeSelector(JSON.parse(this.response).cubes)
-        }
-      }
-      request.send(null);
-    }
-    function updateCubeSelector(cubeNames) {
-      var selector = document.getElementById('cubeNameSelector');
-      // Remove all but the first child.
-      while (selector.children.length > 1) {
-        selector.removeChild(selector.children[selector.children.length - 1]);
-      }
-      for (var i = 0; i < cubeNames.length; i++) {
-        var option = document.createElement('option');
-        option.value = cubeNames[i];
-        option.innerText = cubeNames[i];
-        selector.appendChild(option);
-      }
-    }
-    function selectCube(cubeName) {
-      if (cubeName == '') {
-        return;
-      }
-      currentCube = cubeName;
-    }
-  </script>
+  <link href="style.css" rel="stylesheet" type="text/css"/>
+  <link href="bootstrap.min.css" rel="stylesheet" type="text/css"/>
+  <script type='application/javascript' src='cube-api.js'></script>
 </head>
 <body onload='getCubeNames()'>
-  <h1>Hello, Cube!</h1>
-  <select id='cubeNameSelector' onfocus='getCubeNames()' onchange='selectCube(this.value)'>
-    <option>Select a cube...</option>
-  </select>
-  <br/>
-  <button type='button' onclick='start("corners")'>Corners</button><br/>
-  <button type='button' onclick='start("demo")'>Demo</button><br/>
-  <button type='button' onclick='start("extend")'>Extend</button><br/>
-  <button type='button' onclick='start("flash")'>Flash</button><br/>
-  <button type='button' onclick='start("flatten")'>Flatten</button><br/>
-  <button type='button' onclick='start("line")'>Line</button><br/>
-  <button type='button' onclick='start("matrix")'>Matrix</button><br/>
-  <button type='button' onclick='start("pulse")'>Pulse</button><br/>
-  <button type='button' onclick='start("rainbow")'>Rainbow</button><br/>
-  <button type='button' onclick='start("rotate")'>Rotate</button><br/>
-  <button type='button' onclick='start("shuffle")'>Shuffle</button><br/>
-  <button type='button' onclick='start("sides")'>Sides</button><br/>
-  <button type='button' onclick='start("snakes")'>Snakes</button><br/>
-  <button type='button' onclick='start("tetris")'>Tetris</button><br/>
-  <button type='button' onclick='stop()'>Stop</button><br/>
-  <button type='button' onclick='disconnect()'>Disconnect</button><br/>
-  Speed: 1Hz <input type='range' min='1' max='40' value='20' onchange='setSpeed(this.value)'></input> 40Hz
+  <div class='header'>
+    <h1>Cube Controller</h1>
+    <select id='cubeNameSelector' onfocus='getCubeNames()' onchange='selectCube(this.value)'>
+      <option>Select a cube...</option>
+    </select>
+    <button type='button' class='btn btn-danger' onclick='disconnect()'>Disconnect</button><br/>
+  </div>
+  <div>Visuals:</div>
+  <div class="btn-group btn-group-vertical">
+    <button type='button' class='btn' onclick='start("corners")'>Corners</button>
+    <button type='button' class='btn' onclick='start("demo")'>Demo</button>
+    <button type='button' class='btn' onclick='start("extend")'>Extend</button>
+    <button type='button' class='btn' onclick='start("flash")'>Flash</button>
+    <button type='button' class='btn' onclick='start("flatten")'>Flatten</button>
+    <button type='button' class='btn' onclick='start("line")'>Line</button>
+    <button type='button' class='btn' onclick='start("matrix")'>Matrix</button>
+    <button type='button' class='btn' onclick='start("pulse")'>Pulse</button>
+    <button type='button' class='btn' onclick='start("rainbow")'>Rainbow</button>
+    <button type='button' class='btn' onclick='start("rotate")'>Rotate</button>
+    <button type='button' class='btn' onclick='start("shuffle")'>Shuffle</button>
+    <button type='button' class='btn' onclick='start("sides")'>Sides</button>
+    <button type='button' class='btn' onclick='start("snakes")'>Snakes</button>
+    <button type='button' class='btn' onclick='start("tetris")'>Tetris</button>
+    <button type='button' class='btn btn-inverse' onclick='stop()'>Stop</button>
+  </div>
+  <div>
+    Speed: 1Hz <input type='range' min='1' max='40' value='20' onchange='setSpeed(this.value)'></input> 40Hz
+  </div>
 </body>
 </html>

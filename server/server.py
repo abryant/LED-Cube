@@ -10,6 +10,9 @@ cube_control_queues = {}
 path_whitelist = {
   '/': 'text/html',
   '/index.html': 'text/html',
+  '/style.css': 'text/css',
+  '/bootstrap.min.css': 'text/css',
+  '/cube-api.js': 'application/javascript',
 }
 
 def start_cube_controller(name, file):
