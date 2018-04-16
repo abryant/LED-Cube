@@ -14,9 +14,9 @@ from . import snakes
 def cube_visuals():
   return generators.sequence([
     generators.sequence([
-      scroll_past(Cube(SIZE, Colour((BRIGHTNESS, 0, 0))), Direction.UP),
-      scroll_past(Cube(SIZE, Colour((0, BRIGHTNESS, 0))), Direction.RIGHT),
-      scroll_past(Cube(SIZE, Colour((0, 0, BRIGHTNESS))), Direction.FRONT),
+      scroll_past(Cube(SIZE, Colour.red()), Direction.UP),
+      scroll_past(Cube(SIZE, Colour.green()), Direction.RIGHT),
+      scroll_past(Cube(SIZE, Colour.blue()), Direction.FRONT),
     ]),
     generators.repeat(sides.sides(), 20),
     line_maps.line_to_cube(generators.sequence([
