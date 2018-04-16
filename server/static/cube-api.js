@@ -9,8 +9,18 @@ function setSpeed(speed) {
   if (speed <= 0) {
     return;
   }
+  document.getElementById('frequencySlider').value = speed;
+  document.getElementById('frequencyInput').value = speed;
   var delay = 1.0 / speed;
   send('delay=' + delay);
+}
+function setBrightness(brightness) {
+  if (brightness < 1 || brightness > 255) {
+    return;
+  }
+  document.getElementById('brightnessSlider').value = brightness;
+  document.getElementById('brightnessInput').value = brightness;
+  send('brightness=' + brightness);
 }
 function start(visualization) {
   send('start:' + visualization);

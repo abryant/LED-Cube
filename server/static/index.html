@@ -8,31 +8,61 @@
 <body onload='getCubeNames()'>
   <div class='header'>
     <h1>Cube Controller</h1>
-    <select id='cubeNameSelector' onfocus='getCubeNames()' onchange='selectCube(this.value)'>
-      <option>Select a cube...</option>
-    </select>
-    <button type='button' class='btn btn-danger' onclick='disconnect()'>Disconnect</button><br/>
+    <div class='container'>
+      <div class='row'>
+        <span class='offset4 span4'>
+          <select class='span4' id='cubeNameSelector' onfocus='getCubeNames()' onchange='selectCube(this.value)'>
+            <option>Select a cube...</option>
+          </select>
+        </span>
+        <button type='button' class='btn btn-danger offset2 span2' onclick='disconnect()'>Disconnect</button><br/>
+      </div>
+    </div>
   </div>
-  <div>Visuals:</div>
-  <div class="btn-group btn-group-vertical">
-    <button type='button' class='btn' onclick='start("corners")'>Corners</button>
-    <button type='button' class='btn' onclick='start("demo")'>Demo</button>
-    <button type='button' class='btn' onclick='start("extend")'>Extend</button>
-    <button type='button' class='btn' onclick='start("flash")'>Flash</button>
-    <button type='button' class='btn' onclick='start("flatten")'>Flatten</button>
-    <button type='button' class='btn' onclick='start("line")'>Line</button>
-    <button type='button' class='btn' onclick='start("matrix")'>Matrix</button>
-    <button type='button' class='btn' onclick='start("pulse")'>Pulse</button>
-    <button type='button' class='btn' onclick='start("rainbow")'>Rainbow</button>
-    <button type='button' class='btn' onclick='start("rotate")'>Rotate</button>
-    <button type='button' class='btn' onclick='start("shuffle")'>Shuffle</button>
-    <button type='button' class='btn' onclick='start("sides")'>Sides</button>
-    <button type='button' class='btn' onclick='start("snakes")'>Snakes</button>
-    <button type='button' class='btn' onclick='start("tetris")'>Tetris</button>
-    <button type='button' class='btn btn-inverse' onclick='stop()'>Stop</button>
-  </div>
-  <div>
-    Speed: 1Hz <input type='range' min='1' max='40' value='20' onchange='setSpeed(this.value)'></input> 40Hz
+  <div class='container'>
+    <div class='row'>
+      <span class='span6'>
+        Speed: 1Hz
+        <input type='range' min='1' max='40' value='20' id='frequencySlider' onchange='setSpeed(this.value)'></input>
+        40Hz
+        <span class='input-append frequency-input'>
+          <input type='number' min='1' max='40' value='20' id='frequencyInput' oninput='setSpeed(this.value)'></input>
+          <span class='add-on'>Hz</span>
+        </span>
+      </span>
+      <span class='span6'>
+        Brightness: 1
+        <input type='range' min='1' max='255' value='20' id='brightnessSlider' onchange='setBrightness(this.value)'></input>
+        255
+        <input type='number' min='1' max='255' value='20' id='brightnessInput' oninput='setBrightness(this.value)'></input>
+      </span>
+    </div>
+    <div class='row' style='margin-top: 10px;'>
+      <div class='span2'>
+        <div>Visuals:</div>
+        <div class="btn-group btn-group-vertical">
+          <button type='button' class='btn' onclick='start("corners")'>Corners</button>
+          <button type='button' class='btn' onclick='start("demo")'>Demo</button>
+          <button type='button' class='btn' onclick='start("extend")'>Extend</button>
+          <button type='button' class='btn' onclick='start("flash")'>Flash</button>
+          <button type='button' class='btn' onclick='start("flatten")'>Flatten</button>
+          <button type='button' class='btn' onclick='start("line")'>Line</button>
+          <button type='button' class='btn' onclick='start("matrix")'>Matrix</button>
+          <button type='button' class='btn' onclick='start("pulse")'>Pulse</button>
+          <button type='button' class='btn' onclick='start("rainbow")'>Rainbow</button>
+          <button type='button' class='btn' onclick='start("rotate")'>Rotate</button>
+          <button type='button' class='btn' onclick='start("shuffle")'>Shuffle</button>
+          <button type='button' class='btn' onclick='start("sides")'>Sides</button>
+          <button type='button' class='btn' onclick='start("snakes")'>Snakes</button>
+          <button type='button' class='btn' onclick='start("tetris")'>Tetris</button>
+          <button type='button' class='btn btn-inverse' onclick='stop()'>Stop</button>
+        </div>
+      </div>
+      <div class='span10'>
+        <div style='background-color: #ff0000; height: 500px;'>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>
