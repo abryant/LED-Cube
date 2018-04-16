@@ -8,12 +8,12 @@ LEDS = 64
 def fade(colours, ratio):
   return [Colour((colours[i].r * ratio, colours[i].g * ratio, colours[i].b * ratio)) for i in range(len(colours))]
 
-def random_static(num_leds, brightness=BRIGHTNESS):
+def random_static(num_leds, brightness = None):
   while True:
-    yield [Colour(hsv_to_rgb(random.randint(0, 359) / 360, 1, random.randint(1, brightness))) for i in range(num_leds)]
+    yield [Colour(hsv_to_rgb(random.randint(0, 359) / 360, 1, random.randint(1, brightness or Colour.brightness))) for i in range(num_leds)]
 
-def rainbow(num_leds = LEDS, brightness = BRIGHTNESS):
-  return [Colour(hsv_to_rgb(i / num_leds, 1, brightness)) for i in range(num_leds)]
+def rainbow(num_leds = LEDS, brightness = None):
+  return [Colour(hsv_to_rgb(i / num_leds, 1, brightness or Colour.brightness)) for i in range(num_leds)]
 
 def scrolling_rainbow(num_leds = LEDS):
  return generators.sequence([

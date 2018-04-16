@@ -31,14 +31,14 @@ class Snake:
 
   def draw(self, cube):
     for p in self.snake:
-      cube.set(p, self.colour)
+      cube.set(p, self.colour() if callable(self.colour) else self.colour)
 
 def setup(number_of_snakes):
   snakes = [
-      Snake(Pos(0, 0, 0), Colour.red()),
-      Snake(Pos(SIZE - 1, 0, SIZE - 1), Colour.green()),
-      Snake(Pos(0, SIZE - 1, SIZE - 1), Colour.blue()),
-      Snake(Pos(SIZE - 1, SIZE - 1, 0), Colour.white()),
+      Snake(Pos(0, 0, 0), Colour.red),
+      Snake(Pos(SIZE - 1, 0, SIZE - 1), Colour.green),
+      Snake(Pos(0, SIZE - 1, SIZE - 1), Colour.blue),
+      Snake(Pos(SIZE - 1, SIZE - 1, 0), Colour.white),
   ][:number_of_snakes]
   for i in range(SIZE):
     for s in snakes:

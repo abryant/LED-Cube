@@ -55,6 +55,8 @@ class Colour:
 
 Colour.BLACK = Colour((0, 0, 0))
 
-def hue_to_colour(hue, brightness=Colour.brightness):
+def hue_to_colour(hue, brightness=None):
+  if brightness is None:
+    brightness = Colour.brightness
   return Colour.from_floats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
 
