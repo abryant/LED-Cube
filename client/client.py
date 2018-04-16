@@ -2,8 +2,7 @@ import requests
 import sys
 from display import *
 
-def check_prefix(infile):
-  first = infile.read(1)
+def check_prefix(infile, first):
   if first == b'':
     raise EOFError()
   if first == b'C':
@@ -15,7 +14,8 @@ def check_prefix(infile):
   return False
 
 def process_line(infile, display):
-  if check_prefix(infile):
+  c = infile.read(1)
+  if check_prefix(infile, c):
     length = ((infile.read(1)[0] << 8) | infile.read(1)[0])
     data = infile.read(length * 3)
     colours = []
@@ -25,7 +25,7 @@ def process_line(infile, display):
       b = data[3*i + 2]
       colours.append(Colour((r, g, b)))
     display.display(colours)
-  c = infile.read(1)
+    c = infile.read(1)
   while c != b'\n' and c != b'':
     c = infile.read(1)
   if c == b'':
