@@ -36,7 +36,11 @@ function getCubeNames() {
   request.open('GET', '/api/list-cubes', true);
   request.onload = function() {
     if (this.status == 200) {
-      updateCubeSelector(JSON.parse(this.response).cubes)
+      var cubes = JSON.parse(this.response).cubes;
+      updateCubeSelector(cubes);
+      if (cubes.length > 0) {
+        selectCube(cubes[0]);
+      }
     }
   }
   request.send(null);
@@ -58,5 +62,6 @@ function selectCube(cubeName) {
   if (cubeName == '') {
     return;
   }
+  currentCube = cubeName;
 }
 
