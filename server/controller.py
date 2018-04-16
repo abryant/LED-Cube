@@ -1,3 +1,4 @@
+from display import Colour
 from queue import Queue, Empty
 from time import sleep
 import generators
@@ -25,7 +26,6 @@ class Controller:
     self.queue = queue
     self.file = file
     self.delay = 0.05
-    self.brightness = 50
     self.current_generator = None
     self.stopped = False
     self.listeners = []
@@ -96,7 +96,7 @@ class Controller:
       try:
         b = int(command[len('brightness='):])
         if b >= 0 and b < 256:
-          self.brightness = b
+          Colour.brightness = b
       except ValueError:
         pass
       return
