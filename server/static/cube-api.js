@@ -1,4 +1,7 @@
 var currentCube = '';
+var currentEventSource = null;
+var leds = null;
+
 function send(command) {
   var url = '/api/send/' + currentCube + '/' + command;
   var request = new XMLHttpRequest();
@@ -63,5 +66,51 @@ function selectCube(cubeName) {
     return;
   }
   currentCube = cubeName;
+  document.getElementById('cubeNameSelector').value = cubeName;
+  listenToCube();
+}
+function initLeds() {
+  if (leds != null) {
+    return leds;
+  }
+  leds = [];
+  var display = document.getElementById('display-placeholder');
+  for (var i = 0; i < 8; ++i) {
+    var row = document.createElement('div');
+    row.style = 'height: 20px; margin: 5px;';
+    display.appendChild(row);
+    for (var j = 0; j < 8; ++j) {
+      leds[8*i + j] = document.createElement('span');
+      leds[8*i + j].style = 'width: 20px; height: 20px; margin: 5px; display: inline-block;';
+      row.appendChild(leds[8*i + j]);
+    }
+  }
 }
 
+function listenToCube() {
+  if (currentEventSource != null) {
+    currentEventSource.close();
+  }
+  currentEventSource = new EventSource('/api/listen/' + currentCube);
+  currentEventSource.addEventListener('error', function(e) {
+    console.log('Error from ' + e.origin);
+  });
+  initLeds();
+  currentEventSource.addEventListener('message', function(e) {
+    var data = base64js.toByteArray(e.data);
+    // check for 'CUBE:' at the start
+    if (data[0] != 67 || data[1] != 85 || data[2] != 66 || data[3] != 69 || data[4] != 58) {
+      return;
+    }
+    var len = (data[5] << 8) + data[6];
+    if (data.length < (7 + (3 * len))) {
+      return;
+    }
+    for (var i = 0; i < len; ++i) {
+      var r = data[7 + (3 * i)];
+      var g = data[7 + (3 * i) + 1];
+      var b = data[7 + (3 * i) + 2];
+      leds[i].style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+  });
+}

@@ -1,3 +1,4 @@
+from base64 import b64encode
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from queue import Queue, Empty
 from socketserver import ThreadingMixIn
@@ -12,6 +13,7 @@ path_whitelist = {
   '/index.html': 'text/html',
   '/style.css': 'text/css',
   '/bootstrap.min.css': 'text/css',
+  '/base64js.min.js': 'application/javascript',
   '/cube-api.js': 'application/javascript',
 }
 
@@ -108,13 +110,15 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.wfile.write(b'Failed to listen to ' + bytes(name, encoding="UTF-8") + b'\n')
       return
     self.send_response(200)
-    self.send_header('Content-Type', 'text/plain')
+    self.send_header('Content-Type', 'text/event-stream')
     self.end_headers()
     while True:
       data = data_queue.get()
+      if data[-1] == b'\n':
+        data = data[:-1]
       if data == b'quit':
         return
-      self.wfile.write(data)
+      self.wfile.write(b'data: ' + b64encode(data) + b'\n\n')
       self.wfile.flush()
 
 
