@@ -15,6 +15,7 @@ path_whitelist = {
   '/bootstrap.min.css': 'text/css',
   '/base64js.min.js': 'application/javascript',
   '/cube-api.js': 'application/javascript',
+  '/three.min.js': 'application/javascript',
 }
 
 def start_cube_controller(name, file):

@@ -5,6 +5,7 @@
   <link href="bootstrap.min.css" rel="stylesheet" type="text/css"/>
   <script type='application/javascript' src='base64js.min.js'></script>
   <script type='application/javascript' src='cube-api.js'></script>
+  <script type='application/javascript' src="three.min.js"></script>
 </head>
 <body onload='getCubeNames()'>
   <div class='header'>
@@ -60,7 +61,16 @@
         </div>
       </div>
       <div class='span10'>
-        <div id='display-placeholder' style='height: 500px;'>
+        <div id='display-container'>
+          <script>
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(75, 780/500, 0.1, 1000);
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize(780, 500);
+            document.getElementById('display-container').appendChild(renderer.domElement);
+
+            init3dScene(scene, camera, renderer);
+          </script>
         </div>
       </div>
     </div>

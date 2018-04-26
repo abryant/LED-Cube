@@ -69,23 +69,6 @@ function selectCube(cubeName) {
   document.getElementById('cubeNameSelector').value = cubeName;
   listenToCube();
 }
-function initLeds() {
-  if (leds != null) {
-    return leds;
-  }
-  leds = [];
-  var display = document.getElementById('display-placeholder');
-  for (var i = 0; i < 8; ++i) {
-    var row = document.createElement('div');
-    row.style = 'height: 20px; margin: 5px;';
-    display.appendChild(row);
-    for (var j = 0; j < 8; ++j) {
-      leds[8*i + j] = document.createElement('span');
-      leds[8*i + j].style = 'width: 20px; height: 20px; margin: 5px; display: inline-block;';
-      row.appendChild(leds[8*i + j]);
-    }
-  }
-}
 
 function listenToCube() {
   if (currentEventSource != null) {
@@ -95,7 +78,6 @@ function listenToCube() {
   currentEventSource.addEventListener('error', function(e) {
     console.log('Error from ' + e.origin);
   });
-  initLeds();
   currentEventSource.addEventListener('message', function(e) {
     var data = base64js.toByteArray(e.data);
     // check for 'CUBE:' at the start
@@ -110,7 +92,151 @@ function listenToCube() {
       var r = data[7 + (3 * i)];
       var g = data[7 + (3 * i) + 1];
       var b = data[7 + (3 * i) + 2];
-      leds[i].style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+      leds[i].color = new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
     }
+    requestAnimationFrame(renderScene);
   });
 }
+function makeCube() {
+  var SPACING = 4;
+  var SIZE = 4;
+  var offset = SPACING * (SIZE - 1) / 2.0;
+  var cube = new THREE.Group();
+  leds = [];
+  for (var i = 0; i < 4; i++) {
+    var layer = [];
+    for (var j = 0; j < 4; j++) {
+      var line = [];
+      for (var k = 0; k < 4; k++) {
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+        line.push(material);
+        var box = new THREE.Mesh(geometry, material);
+        box.position.set(SPACING * i - offset, SPACING * j - offset, SPACING * k - offset);
+        cube.add(box);
+      }
+      if (j % 2 == 0) {
+        line.reverse();
+      }
+      layer = layer.concat(line);
+    }
+    if (i % 2 == 1) {
+      layer.reverse();
+    }
+    leds = leds.concat(layer);
+  }
+  return cube;
+}
+var renderScene;
+var cube;
+var currentPosition;
+function init3dScene(scene, camera, renderer) {
+  cube = makeCube();
+  scene.add(cube);
+  currentPosition = new THREE.Spherical(20, Math.PI / 2, 0);
+
+  renderer.domElement.onmousedown = handleCanvasMouseDown;
+  renderer.domElement.onmouseup = handleCanvasMouseUp;
+  renderer.domElement.onmousemove = handleCanvasMouseMove;
+  renderer.domElement.onmousewheel = handleCanvasMouseWheel;
+  renderer.domElement.ontouchstart = updateTouchMode;
+  renderer.domElement.ontouchend = updateTouchMode;
+  renderer.domElement.ontouchmove = handleCanvasTouchMove;
+  renderer.setClearColor(new THREE.Color('#ffffff'));
+  renderScene = function() {
+    cube.setRotationFromEuler(new THREE.Euler(currentPosition.phi - Math.PI / 2, currentPosition.theta, 0));
+    camera.position.z = currentPosition.radius;
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(renderScene);
+}
+var rotating = false;
+var scaling = false;
+var rotateStart = null;
+var scaleStart = null;
+function handleCanvasMouseDown(event) {
+  rotateStart = new THREE.Vector2(event.clientX, event.clientY);
+  rotating = true;
+}
+function handleCanvasMouseUp(event) {
+  rotating = false;
+}
+function handleCanvasMouseMove(event) {
+  if (event.buttons == 0) {
+    rotating = false;
+  }
+  if (!rotating) {
+    return;
+  }
+  rotate(new THREE.Vector2(event.clientX, event.clientY));
+}
+function rotate(rotateEnd) {
+  var ROTATE_SPEED = 2;
+  var delta = new THREE.Vector2();
+  delta.subVectors(rotateEnd, rotateStart).multiplyScalar(ROTATE_SPEED * Math.PI / 180);
+  rotateStart.copy(rotateEnd);
+
+  currentPosition.phi += delta.y;
+  currentPosition.theta += delta.x;
+  if (currentPosition.theta < -Math.PI) {
+    currentPosition.theta += 2 * Math.PI;
+  }
+  if (currentPosition.theta > Math.PI) {
+    currentPosition.theta -= 2 * Math.PI;
+  }
+  currentPosition.makeSafe();
+  requestAnimationFrame(renderScene);
+}
+function handleCanvasMouseWheel(event) {
+  var ZOOM_SPEED = 2;
+  event.preventDefault();
+  if (event.deltaY > 0) {
+    currentPosition.radius = Math.min(currentPosition.radius + ZOOM_SPEED, 40);
+  } else if (event.deltaY < 0) {
+    currentPosition.radius = Math.max(currentPosition.radius - ZOOM_SPEED, 2);
+  }
+  requestAnimationFrame(renderScene);
+}
+
+function updateTouchMode(event) {
+  event.preventDefault();
+  rotating = false;
+  scaling = false;
+  rotateStart = null;
+  scaleStart = null;
+  if (event.targetTouches.length == 1) {
+    rotating = true;
+  } else if (event.targetTouches.length == 2) {
+    scaling = true;
+  }
+}
+function handleCanvasTouchMove(event) {
+  event.preventDefault();
+  var ZOOM_SPEED_TOUCH = 0.1;
+  if (rotating) {
+    if (event.targetTouches.length != 1) {
+      rotating = false;
+      return;
+    }
+    var rotateEnd = new THREE.Vector2(event.targetTouches[0].clientX, event.targetTouches[0].clientY);
+    if (rotateStart == null) {
+      rotateStart = rotateEnd;
+    }
+    rotate(rotateEnd);
+  }
+  if (scaling) {
+    if (event.targetTouches.length != 2) {
+      scaling = false;
+      return;
+    }
+    var scaleEnd = Math.sqrt((event.targetTouches[0].clientX - event.targetTouches[1].clientX)**2 + (event.targetTouches[0].clientY - event.targetTouches[1].clientY)**2);
+    if (scaleStart == null) {
+      scaleStart = scaleEnd;
+    }
+    var diff = (scaleStart - scaleEnd) * ZOOM_SPEED_TOUCH;
+    scaleStart = scaleEnd;
+    currentPosition.radius = Math.max(Math.min(currentPosition.radius + diff, 40), 2);
+    requestAnimationFrame(renderScene);
+  }
+}
+
