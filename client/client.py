@@ -34,7 +34,7 @@ def process_line(infile, display):
 def main(url):
   with Display() as d:
     try:
-      r = requests.get(url, stream=True)
+      r = requests.get(url, stream=True, timeout=120)
       while True:
         process_line(r.raw, d)
     except EOFError:
