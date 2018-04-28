@@ -43,6 +43,11 @@ class Server(ThreadingMixIn, HTTPServer):
   pass
 
 class CubeRequestHandler(BaseHTTPRequestHandler):
+  def setup(self):
+    self.timeout = 10
+    BaseHTTPRequestHandler.setup(self)
+    pass
+
   def do_GET(self):
     if self.path.startswith('/api/cube/') and len(self.path) > len('/api/cube/'):
       self.send_response(200)
