@@ -58,7 +58,7 @@ def straight(end_direction, hue1, hue2):
 hues = [Colour.RED_HUE, Colour.GREEN_HUE, Colour.BLUE_HUE]
 
 
-def sides():
+def faces():
   hue = random.choice(hues)
   direction = random.choice([d for d in Direction])
   while True:
@@ -82,64 +82,7 @@ def sides():
     yield c
     yield True
 
-def combine_edges_and_faces(edge_cube, face_cube):
-  c = face_cube.copy()
-  dirs = [Direction.UP, Direction.LEFT, Direction.FRONT]
-  positions = [Pos(0, 0, 0), Pos(0, SIZE - 1, SIZE - 1), Pos(SIZE - 1, 0, SIZE - 1), Pos(SIZE - 1, SIZE - 1, 0)]
-  for d in dirs:
-    for p in positions:
-      c.fill_line(d, p, edge_cube.get_line(d, p))
-  return c
-
-
-def sides_with_edges():
-  hue = random.choice(hues)
-  direction = random.choice([d for d in Direction])
-  edge_dir = direction
-  face_dir = direction
-  edge_hue = hue
-  face_hue = hue
-  edge_cube = Cube()
-  edge_cube.fill_layer(direction, 0, hue_to_colour(hue))
-  face_cube = edge_cube.copy()
-
-  while True:
-    is_edge_cube = random.choice([True, False])
-    current_dir = edge_dir if is_edge_cube else face_dir
-    current_hue = edge_hue if is_edge_cube else face_hue
-    new_direction = random.choice([d for d in Direction if d != current_dir])
-    new_hue = random.choice([h for h in hues if h != current_hue])
-    if new_direction.value == -current_dir.value:
-      gen = straight(new_direction, current_hue, new_hue)
-    else:
-      gen = corner(current_dir, new_direction, current_hue, new_hue)
-    for val in gen:
-      if type(val) is bool:
-        break
-      if is_edge_cube:
-        edge_cube = val
-      else:
-        face_cube = val
-      yield combine_edges_and_faces(edge_cube, face_cube)
-    c = Cube()
-    c.fill_layer(new_direction, 0, hue_to_colour(new_hue))
-    if is_edge_cube:
-      edge_dir = new_direction
-      edge_hue = new_hue
-      edge_cube = c
-    else:
-      face_dir = new_direction
-      face_hue = new_hue
-      face_cube = c
-    combined = combine_edges_and_faces(edge_cube, face_cube)
-    yield combined
-    yield combined
-    yield combined
-    yield combined
-    yield True
-
-
 if __name__ == "__main__":
   with Display() as d:
-    generators.generate(d, sides(), delay=0.05)
+    generators.generate(d, faces(), delay=0.05)
 
