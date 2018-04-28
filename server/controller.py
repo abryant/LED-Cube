@@ -25,6 +25,7 @@ class Controller:
   def __init__(self, queue, file):
     self.queue = queue
     self.file = file
+    self.brightness = 0.2
     self.delay = 0.05
     self.current_generator = None
     self.stopped = False
@@ -69,10 +70,12 @@ class Controller:
         frame = generators.get_colours(frame)
         if type(frame) is list:
           frame_bytes = bytes([b for c in frame for b in [c.r, c.g, c.b]])
-          data = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + frame_bytes + b'\n'
-          self.send(data)
+          scaled_brightness_bytes = bytes([int(b * self.brightness) for b in frame_bytes])
+          data_scaled = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + scaled_brightness_bytes + b'\n'
+          data_unscaled = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + frame_bytes + b'\n'
+          self.send(data_scaled)
           for l in self.listeners:
-            l.put(data)
+            l.put(data_unscaled)
           return
     except StopIteration:
       self.current_generator = None
@@ -98,9 +101,9 @@ class Controller:
       return
     if command.startswith('brightness=') and len(command) > len('brightness='):
       try:
-        b = int(command[len('brightness='):])
-        if b >= 0 and b < 256:
-          Colour.brightness = b
+        b = float(command[len('brightness='):])
+        if b >= 0 and b <= 1:
+          self.brightness = b
       except ValueError:
         pass
       return

@@ -18,12 +18,12 @@ function setSpeed(speed) {
   send('delay=' + delay);
 }
 function setBrightness(brightness) {
-  if (brightness < 1 || brightness > 255) {
+  if (brightness < 0 || brightness > 100) {
     return;
   }
   document.getElementById('brightnessSlider').value = brightness;
   document.getElementById('brightnessInput').value = brightness;
-  send('brightness=' + brightness);
+  send('brightness=' + (brightness / 100.0));
 }
 function start(visualization) {
   send('start:' + visualization);
