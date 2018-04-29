@@ -1,5 +1,6 @@
 import requests
 import sys
+import urllib3
 from display import *
 
 def check_prefix(infile, first):
@@ -33,13 +34,16 @@ def process_line(infile, display):
 
 def main(url):
   with Display() as d:
-    try:
-      r = requests.get(url, stream=True, timeout=120)
-      while True:
-        process_line(r.raw, d)
-    except EOFError:
-      print("End of stream - stopping.")
-      pass
+    while True:
+      try:
+        r = requests.get(url, stream=True, timeout=120)
+        while True:
+          process_line(r.raw, d)
+      except EOFError:
+        print("End of stream - stopping.")
+        return
+      except urllib3.exceptions.ReadTimeoutError:
+        print("Timeout while reading - reconnecting...")
 
 if __name__ == "__main__":
   main(sys.argv[1])
