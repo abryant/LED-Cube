@@ -60,3 +60,6 @@ def hue_to_colour(hue, brightness=None):
     brightness = Colour.brightness
   return Colour.from_floats(hsv_to_rgb((hue % 360) / 360, 1, brightness / 255))
 
+def get_opposite_hue(hue):
+  return (hue + 180) % 360
+

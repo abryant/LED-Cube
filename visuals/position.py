@@ -44,6 +44,9 @@ class Direction(Enum):
   FRONT = Pos(0, 0, 1)
   BACK = Pos(0, 0, -1)
 
+def is_direction_positive(direction):
+  return (direction == Direction.DOWN or direction == Direction.RIGHT or direction == Direction.FRONT)
+
 def is_same_axis(dir1, dir2):
   return (abs(dir1.value.x) == abs(dir2.value.x)) and (abs(dir1.value.y) == abs(dir2.value.y)) and (abs(dir1.value.z) == abs(dir2.value.z))
 

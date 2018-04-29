@@ -2,11 +2,12 @@ from display import Colour
 from queue import Queue, Empty
 from time import sleep
 import generators
-from visuals import corners, cube_visuals, extend, faces, flash, flatten, line, matrix, pulse, rainbow, rotate, shuffle, snakes, tetris
+from visuals import corners, cube_visuals, edges, extend, faces, flash, flatten, line, matrix, pulse, rainbow, rotate, shuffle, snakes, tetris
 
 GENERATORS = {
   'corners': corners.corners,
   'demo': cube_visuals.cube_visuals,
+  'edges': edges.edges,
   'extend': extend.extend,
   'faces': faces.faces,
   'flash': flash.flash,

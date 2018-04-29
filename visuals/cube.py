@@ -36,9 +36,6 @@ def convert_face_coordinates(face_dir, coord, layer):
     Direction.FRONT: Pos(x, y, layer_inv),
   }[face_dir]
 
-def is_direction_positive(direction):
-  return (direction == Direction.DOWN or direction == Direction.RIGHT or direction == Direction.FRONT)
-
 class Cube:
 
   def __init__(self, size = SIZE, colour = Colour.BLACK):
@@ -224,6 +221,16 @@ def cycle(cube, direction):
 
 def scroll_past(cube, direction):
   return generators.sequence([scroll_in(cube, direction), single_frame(cube), scroll_out(cube, direction)])
+
+def combine_cubes(cube_a, cube_b):
+  c = cube_a.copy()
+  for x in range(cube_a.size):
+    for y in range(cube_a.size):
+      for z in range(cube_a.size):
+        p = Pos(x, y, z)
+        if c.get(p) == Colour.BLACK:
+          c.set(p, cube_b.get(p))
+  return c
 
 if __name__ == "__main__":
   with Display() as d:

@@ -1,6 +1,7 @@
 from display import *
 from .cube import *
 import generators
+from . import edges
 from . import faces
 from . import line
 from . import rainbow
@@ -19,6 +20,7 @@ def cube_visuals():
       scroll_past(Cube(SIZE, Colour.blue()), Direction.FRONT),
     ]),
     generators.repeat(faces.faces(), 20),
+    generators.repeat(edges.edges(), 20),
     line_maps.line_to_cube(generators.sequence([
       line.scroll_in(line.rainbow()),
       generators.repeat(line.cycle(line.rainbow()), 2),
