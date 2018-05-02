@@ -1,6 +1,7 @@
 import requests
 import sys
 import urllib3
+from time import sleep
 from display import *
 
 def check_prefix(infile, first):
@@ -40,8 +41,8 @@ def main(url):
         while True:
           process_line(r.raw, d)
       except EOFError:
-        print("End of stream - stopping.")
-        return
+        print("End of stream - reconnecting in 10 seconds...")
+        sleep(10)
       except urllib3.exceptions.ReadTimeoutError:
         print("Timeout while reading - reconnecting...")
 
