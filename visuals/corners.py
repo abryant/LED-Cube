@@ -29,7 +29,7 @@ hues = [Colour.RED_HUE, Colour.YELLOW_HUE, Colour.GREEN_HUE, Colour.CYAN_HUE, Co
 def shrink_and_grow(hue1, hue2):
   if abs(hue2 - hue1) > abs(hue2 + 360 - hue1):
     hue2 += 360
-  h = (hue2 - hue1) / 6 # 7 animation frames (the last of which is skipped), so 6 gaps
+  h = (hue2 - hue1) / ((SIZE - 1) * 2) # (SIZE - 1) animation frames for each direction
   currenthue = hue1
   for i in range(SIZE - 1, 0, -1):
     yield draw_outline(Pos(0, 0, 0), Pos(i, i, i), hue_to_colour(currenthue))
