@@ -7,42 +7,41 @@ def get_layer_coord(direction, index):
   """Gets the 0,0 coordinate on the given layer, where layer 0 is the one furthest in the given direction."""
   return (direction.value * (SIZE - 1 - index)) if is_direction_positive(direction) else (-direction.value * index)
 
-def corner(start_dir, end_dir, hue1, hue2):
-  line_dir = get_perpendicular_direction(start_dir, end_dir)
+def find_face_points(face_dir, line_dir):
+  face_component = face_dir.value * (SIZE - 1) if is_direction_positive(face_dir) else Pos(0, 0, 0)
+  line_component = line_dir.value if is_direction_positive(line_dir) else opposite_direction(line_dir).value
+  perpendicular_dir = perpendicular_direction(face_dir, line_dir)
+  points = [[face_component + (perpendicular_dir.value * j) + (line_component * i) for j in range(SIZE)] for i in range(SIZE)]
+  if is_direction_positive(line_dir):
+    points.reverse()
+  return points
+
+def generate_corner(start_dir, end_dir, hue1, hue2):
+  opposite_start_dir = opposite_direction(start_dir)
+  opposite_end_dir = opposite_direction(end_dir)
+  points = find_face_points(start_dir, end_dir)
   if abs(hue2 - hue1) > abs(hue2 + 360 - hue1):
     hue2 += 360
-  h = (hue2 - hue1) / 4 # 5 animation frames, so 4 gaps
-  start_i = [get_layer_coord(start_dir, i) for i in range(SIZE)]
-  end_i = [get_layer_coord(end_dir, i) for i in range(SIZE)]
-  while True:
+  animation_gaps = (SIZE - 1) * 2
+  h = (hue2 - hue1) / animation_gaps
+  current_hue = hue1
+  for i in range(SIZE):
     c = Cube()
-    c.fill_layer(start_dir, 0, hue_to_colour(hue1))
+    ratio = i / (c.size - 1)
+    for j in range(len(points)):
+      for k in range(len(points[j])):
+        c.set(points[j][k] + (opposite_start_dir.value * round(ratio * j)), hue_to_colour(current_hue))
     yield c
-    c.clear()
-    cs = [hue_to_colour(hue1 + h) for i in range(SIZE)]
-    c.fill_line(line_dir, start_i[0] + end_i[0], cs)
-    c.fill_line(line_dir, start_i[0] + end_i[1], cs)
-    c.fill_line(line_dir, start_i[1] + end_i[2], cs)
-    c.fill_line(line_dir, start_i[1] + end_i[3], cs)
+    current_hue += h
+  points = find_face_points(end_dir, start_dir)
+  for i in range(SIZE - 2, -1, -1):
+    c = Cube()
+    ratio = i / (c.size - 1)
+    for j in range(len(points)):
+      for k in range(len(points[j])):
+        c.set(points[j][k] + (opposite_end_dir.value * round(ratio * j)), hue_to_colour(current_hue))
     yield c
-    c.clear()
-    cs = [hue_to_colour(hue1 + 2*h) for i in range(SIZE)]
-    c.fill_line(line_dir, start_i[0] + end_i[0], cs)
-    c.fill_line(line_dir, start_i[1] + end_i[1], cs)
-    c.fill_line(line_dir, start_i[2] + end_i[2], cs)
-    c.fill_line(line_dir, start_i[3] + end_i[3], cs)
-    yield c
-    c.clear()
-    cs = [hue_to_colour(hue1 + 3*h) for i in range(SIZE)]
-    c.fill_line(line_dir, start_i[0] + end_i[0], cs)
-    c.fill_line(line_dir, start_i[1] + end_i[0], cs)
-    c.fill_line(line_dir, start_i[2] + end_i[1], cs)
-    c.fill_line(line_dir, start_i[3] + end_i[1], cs)
-    yield c
-    c.clear()
-    c.fill_layer(end_dir, 0, hue_to_colour(hue2))
-    yield c
-    yield True
+    current_hue += h
 
 def straight(end_direction, hue1, hue2):
   if abs(hue2 - hue1) > abs(hue2 + 360 - hue1):
@@ -67,7 +66,7 @@ def faces():
     if new_direction.value == -direction.value:
       gen = straight(new_direction, hue, new_hue)
     else:
-      gen = corner(direction, new_direction, hue, new_hue)
+      gen = generate_corner(direction, new_direction, hue, new_hue)
     for val in gen:
       if type(val) is bool:
         break
