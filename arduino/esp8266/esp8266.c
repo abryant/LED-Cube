@@ -16,41 +16,58 @@ static inline uint32_t _getCycleCount(void) {
   return ccount;
 }
 
-void ICACHE_RAM_ATTR espShow(
- uint8_t pin, uint8_t *pixels, uint32_t numBytes) {
+// Assumes there are 512 LEDs to show, and pixels is 512*3 bytes long.
+void ICACHE_RAM_ATTR espShow(uint8_t *pixels) {
 
 #define CYCLES_800_T0H  (40) // 0.25us
 #define CYCLES_800_T1H  (218) // 1.3625us
 #define CYCLES_800      (274) // 1.7125us per bit
 
-  uint8_t *p, *end, pix, mask;
-  uint32_t t, time0, time1, period, c, startTime, pinMask;
+#define LAYER_BYTES (128 * 3)
+#define PIN1 (9)
+#define PIN2 (12)
+#define PIN3 (13)
+#define PIN4 (14)
 
-  pinMask   = _BV(pin);
-  p         =  pixels;
-  end       =  p + numBytes;
-  pix       = *p++;
-  mask      = 0x80;
+  uint8_t *p1, *p2, *p3, *p4, *end1, mask;
+  uint32_t c, startTime, pix, pinMask;
+
+  pinMask = _BV(PIN1) | _BV(PIN2) | _BV(PIN3) | _BV(PIN4);
+  p1 = pixels;
+  p2 = pixels + LAYER_BYTES;
+  p3 = pixels + (2 * LAYER_BYTES);
+  p4 = pixels + (3 * LAYER_BYTES);
+  end1 =  pixels + LAYER_BYTES;
+  mask = 0x80;
+  // pix has 1 bits for the ports that we want to send 0 for
+  pix = ((*p1 & mask) ? 0x0 : _BV(PIN1)) |
+        ((*p2 & mask) ? 0x0 : _BV(PIN2)) |
+        ((*p3 & mask) ? 0x0 : _BV(PIN3)) |
+        ((*p4 & mask) ? 0x0 : _BV(PIN4));
   startTime = 0;
 
-  time0  = CYCLES_800_T0H;
-  time1  = CYCLES_800_T1H;
-  period = CYCLES_800;
-
-  for(t = time0;; t = time0) {
-    if(pix & mask) t = time1;                             // Bit high duration
-    while(((c = _getCycleCount()) - startTime) < period); // Wait for bit start
-    startTime = c;                                        // Save start time
-    GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, pinMask);       // Set high
-    while(((c = _getCycleCount()) - startTime) < t);      // Wait high duration
-    GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, pinMask);       // Set low
-    if(!(mask >>= 1)) {                                   // Next bit/byte
-      if(p >= end) break;
-      pix  = *p++;
+  while (true) {
+    while(((c = _getCycleCount()) - startTime) < CYCLES_800);     // Wait for bit start
+    startTime = c;                                                // Save start time
+    GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, pinMask);               // Set high
+    while(((c = _getCycleCount()) - startTime) < CYCLES_800_T0H); // Wait 0 high duration
+    GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, pix);                   // Set low for 0 bits
+    while(((c = _getCycleCount()) - startTime) < CYCLES_800_T1H); // Wait the rest of the 1 high duration
+    GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, pinMask);               // Set low
+    if(!(mask >>= 1)) {                                           // Next bit/byte
       mask = 0x80;
+      p1++;
+      p2++;
+      p3++;
+      p4++;
+      if(p1 >= end1) break;
     }
+    pix = ((*p1 & mask) ? 0x0 : _BV(PIN1)) |
+          ((*p2 & mask) ? 0x0 : _BV(PIN2)) |
+          ((*p3 & mask) ? 0x0 : _BV(PIN3)) |
+          ((*p4 & mask) ? 0x0 : _BV(PIN4));
   }
-  while((_getCycleCount() - startTime) < period); // Wait for last bit
+  while((_getCycleCount() - startTime) < CYCLES_800); // Wait for last bit
 }
 
 #endif // ESP8266

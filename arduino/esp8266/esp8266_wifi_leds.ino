@@ -15,8 +15,18 @@ uint32_t lastReceiveTimeMillis = 0;
 void setup() {
   system_update_cpu_freq(160);
   pinMode(2, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+  pinMode(14, OUTPUT);
   // The signal is inverted by a transistor, so we need to set it to low to begin with.
   digitalWrite(2, HIGH);
+  digitalWrite(9, HIGH);
+  digitalWrite(12, HIGH);
+  digitalWrite(13, HIGH);
+  digitalWrite(14, HIGH);
+
+  delay(100);
 
   // Set all of the LEDs to black.
   uint8_t *data = (uint8_t*) calloc(DEFAULT_LEDS * 3, sizeof(uint8_t));
@@ -128,17 +138,19 @@ void loop() {
 
 
 // ESP8266 show() is external to enforce ICACHE_RAM_ATTR execution
-extern "C" void ICACHE_RAM_ATTR espShow(
-  uint8_t pin, uint8_t *pixels, uint32_t numBytes);
+extern "C" void ICACHE_RAM_ATTR espShow(uint8_t *pixels);
 
 uint32_t endTime;
 
 void display(uint8_t *bytes, uint16_t len) {
+  if (len != (DEFAULT_LEDS * 3)) {
+    return;
+  }
   while((micros() - endTime) < 55); // datasheet says 50 microseconds
 
   noInterrupts();
 
-  espShow(2, bytes, len);
+  espShow(bytes);
 
   interrupts();
 
