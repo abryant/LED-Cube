@@ -50,20 +50,15 @@ def setup(number_of_snakes):
       s.advance(p, grow = True)
   return snakes
 
-def snakes(frame_limit = None, number_of_snakes = 3):
+def snakes(number_of_snakes = 3):
   snakes = None
   while snakes is None:
     snakes = setup(number_of_snakes)
-  i = 0
   while True:
     c = Cube()
     for s in snakes:
       s.draw(c)
     yield c
-    i += 1
-    if frame_limit is not None and i == frame_limit:
-      i = 0
-      yield True
     for s in snakes:
       avoid = [p for avoid_snake in snakes for p in avoid_snake.snake]
       p = s.get_next_position(avoid)

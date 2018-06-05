@@ -95,6 +95,18 @@ def fast(gen, frames = 2):
       f = (f + 1) % frames
     yield True
 
+def frame_limit(gen, frames):
+  i = 0
+  while True:
+    for val in gen:
+      if type(val) is bool:
+        # Ignore underlying structure, and just use the frame limit.
+        continue
+      yield val
+      i = (i + 1) % frames
+      if i == 0:
+        yield True
+
 def debug(gen):
   for val in gen:
     if type(val) is bool:
