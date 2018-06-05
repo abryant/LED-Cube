@@ -52,6 +52,7 @@ def straight(end_direction, hue1, hue2):
       c = Cube()
       c.fill_layer(end_direction, SIZE - 1 - i, hue_to_colour(hue1 + (h * i)))
       yield c
+      yield c
     yield True
 
 hues = [Colour.RED_HUE, Colour.GREEN_HUE, Colour.BLUE_HUE]
@@ -75,8 +76,6 @@ def faces():
     hue = new_hue
     c = Cube()
     c.fill_layer(direction, 0, hue_to_colour(hue))
-    yield c
-    yield c
     yield c
     yield c
     yield True
