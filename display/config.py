@@ -1,4 +1,4 @@
 DISPLAY_FILE = '/dev/ttyUSB0'
-SIZE = 4
+SIZE = 8
 BRIGHTNESS = 255
 

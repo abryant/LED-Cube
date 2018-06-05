@@ -3,7 +3,7 @@ import generators
 from colorsys import hsv_to_rgb
 import random
 
-LEDS = 64
+LEDS = 512
 
 def fade(colours, ratio):
   return [Colour((colours[i].r * ratio, colours[i].g * ratio, colours[i].b * ratio)) for i in range(len(colours))]
