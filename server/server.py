@@ -45,6 +45,7 @@ class Server(ThreadingMixIn, HTTPServer):
 class CubeRequestHandler(BaseHTTPRequestHandler):
   def setup(self):
     self.timeout = 10
+    self.disable_nagle_algorithm = True
     BaseHTTPRequestHandler.setup(self)
     pass
 
