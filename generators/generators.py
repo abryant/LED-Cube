@@ -47,18 +47,18 @@ def sequence(gens, transition=None):
         if type(current) is bool:
           # zero-length generator, move to next one
           continue
-        prev_transition = None
+        first = True
         for t in transition(prev, current):
-          if prev_transition is not None:
-            yield prev_transition
-          prev_transition = t
-        prev = prev_transition
+          if first:
+            first = False
+          else:
+            yield t
+        prev = current
 
       for val in gens[i]:
         if type(val) is bool:
           break
-        if prev is not None:
-          yield prev
+        yield val
         prev = val
     yield True
 
