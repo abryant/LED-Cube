@@ -84,6 +84,17 @@ def slow(gen, frames = 2):
         yield val
     yield True
 
+def fast(gen, frames = 2):
+  while True:
+    f = 0
+    for val in gen:
+      if type(val) is bool:
+        break
+      if f == 0:
+        yield val
+      f = (f + 1) % frames
+    yield True
+
 def debug(gen):
   for val in gen:
     if type(val) is bool:

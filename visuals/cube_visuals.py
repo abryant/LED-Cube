@@ -21,15 +21,15 @@ def cube_visuals():
     ]),
     generators.repeat(faces.faces(), 20),
     generators.repeat(edges.edges(), 20),
-    line_maps.line_to_cube(generators.sequence([
-      line.scroll_in(line.rainbow()),
-      generators.repeat(line.cycle(line.rainbow()), 2),
-      line.scroll_out(line.rainbow()),
-    ])),
-    generators.repeat(generators.slow(corners.corners()), 10),
+    generators.fast(
+      line_maps.line_to_cube(generators.sequence([
+        line.scroll_in(line.rainbow()),
+        line.scroll_out(line.rainbow()),
+      ]))),
+    generators.repeat(corners.corners(), 10),
     generators.repeat(extend.extend(), 10),
     flatten.flatten(iterations = 10),
-    generators.slow(snakes.snakes(frame_limit = 100)),
+    snakes.snakes(frame_limit = 100),
   ])
 
 if __name__ == "__main__":
