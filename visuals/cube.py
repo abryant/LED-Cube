@@ -87,7 +87,9 @@ class Cube:
      9 10 11 12
      8  7  6  5
      1  2  3  4
-    The second layer reverses this ordering
+    The second layer reverses this ordering.
+
+    For 8x8x8 cubes, the layer ordering is reversed.
     """
     result = []
     for layer_index, layer in enumerate(self.grid):
@@ -100,6 +102,8 @@ class Cube:
       if (layer_index % 2) == 0:
         layer_result.reverse()
       result += layer_result
+    if self.size == 8:
+      result.reverse()
     return result
 
   def set(self, pos, colour):

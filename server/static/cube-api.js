@@ -99,15 +99,15 @@ function listenToCube() {
 }
 function makeCube() {
   var SPACING = 4;
-  var SIZE = 4;
+  var SIZE = 8;
   var offset = SPACING * (SIZE - 1) / 2.0;
   var cube = new THREE.Group();
   leds = [];
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < SIZE; i++) {
     var layer = [];
-    for (var j = 0; j < 4; j++) {
+    for (var j = 0; j < SIZE; j++) {
       var line = [];
-      for (var k = 0; k < 4; k++) {
+      for (var k = 0; k < SIZE; k++) {
         var geometry = new THREE.BoxGeometry(1, 1, 1);
         var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
         line.push(material);
@@ -124,6 +124,10 @@ function makeCube() {
       layer.reverse();
     }
     leds = leds.concat(layer);
+  }
+  // The layers are reversed for 8x8x8 cubes.
+  if (SIZE == 8) {
+    leds.reverse();
   }
   return cube;
 }
