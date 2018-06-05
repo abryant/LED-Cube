@@ -17,7 +17,7 @@ class Snake:
     """Chooses a direction to advance, and returns the next position.
 
     This can return None if there are no valid directions to advance, in which case the snake stays still."""
-    if random.randint(0, 10) < 3 or not self.can_advance(self.direction, avoid_positions):
+    if random.randint(0, 10) < 4 or not self.can_advance(self.direction, avoid_positions):
       alt_dirs = [d for d in Direction if self.can_advance(d, avoid_positions)]
       if len(alt_dirs) == 0:
         return None
