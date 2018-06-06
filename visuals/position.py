@@ -10,6 +10,9 @@ class Pos:
   def is_in_bounds(self, size = SIZE):
     return self.x >= 0 and self.x < size and self.y >= 0 and self.y < size and self.z >= 0 and self.z < size
 
+  def is_2d(self):
+    return self.z == 0
+
   def __add__(self, other):
     return Pos(self.x + other.x, self.y + other.y, self.z + other.z)
 
