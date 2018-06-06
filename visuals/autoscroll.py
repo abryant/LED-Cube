@@ -11,7 +11,7 @@ def autoscroll(layer_generator, direction = Direction.BACK):
           scroll_back(c, direction)
           yield c.copy()
           yield True
-          continue
+        continue
       scroll_back(c, direction, new_layer = val)
       yield c.copy()
 
