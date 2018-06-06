@@ -19,7 +19,7 @@ GENERATORS = {
   'rope': rope.rope,
   'rotate': rotate.rotate,
   'shuffle': shuffle.shuffle,
-  'snakes': lambda: generators.slow(snakes.snakes()),
+  'snakes': snakes.snakes,
   'starfield': starfield.starfield,
   'tetris': tetris.tetris,
 }
