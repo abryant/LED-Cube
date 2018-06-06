@@ -2,7 +2,7 @@ from display import Colour
 from queue import Queue, Empty
 from time import sleep
 import generators
-from visuals import corners, cube_visuals, edges, extend, faces, flash, flatten, line, matrix, pulse, rainbow, rope, rotate, shuffle, snakes, starfield, tetris
+from visuals import corners, cube_visuals, edges, extend, faces, flash, flatten, line, matrix, pulse, rainbow, rope, rotate, shuffle, snakes, starfield, tetris, text
 
 GENERATORS = {
   'corners': corners.corners,
@@ -22,6 +22,7 @@ GENERATORS = {
   'snakes': snakes.snakes,
   'starfield': starfield.starfield,
   'tetris': tetris.tetris,
+  'text': lambda: text.text("CUBE ", [Colour.red(), Colour.green(), Colour.blue()]),
 }
 
 class Controller:

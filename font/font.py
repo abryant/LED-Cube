@@ -8,7 +8,7 @@ def print_character(c):
     print('')
 
 def draw_character(c, on, off):
-  """Draws the character c into an 8x8 array[y][x], with pixels set to on and off."""
+  """Draws the character c into an 8x8 array[x][y], with pixels set to on and off."""
   arr = font_arrays[c]
-  return [[(on if (arr[y] >> x) & 1 else off) for x in range(8)] for y in range(8)]
+  return [[(on if (arr[y] >> x) & 1 else off) for y in range(8)] for x in range(8)]
 

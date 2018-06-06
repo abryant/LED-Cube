@@ -1,4 +1,5 @@
 from display import *
+from .autoscroll import *
 from .grid import *
 from .position import *
 from font.font import draw_character
@@ -19,6 +20,17 @@ def marquee(text, colours):
   return generators.sequence(
       [display_character(" ", Colour.BLACK)] + text_characters + [display_character(" ", Colour.BLACK)],
       transition = functools.partial(grid_transitions.scroll, Direction.RIGHT))
+
+def text_2d(text, colours):
+  if type(colours) is not list:
+    colours = [colours]
+  while True:
+    for i in range(len(text)):
+      yield draw_character(text[i], colours[i % len(colours)], Colour.BLACK)
+      yield True
+
+def text(text, colours):
+  return autoscroll(text_2d(text, colours), direction = Direction.FRONT)
 
 def main():
   with Display() as d:
