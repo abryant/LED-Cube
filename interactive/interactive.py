@@ -1,4 +1,5 @@
 from queue import Queue, Empty
+from visuals.position import *
 import time
 
 class InteractiveResponse:
@@ -10,29 +11,31 @@ class InteractiveResponse:
     self.timeout = timeout
     self.wait_for_input = wait_for_input
 
-class Interactive:
+def wait_for_input(value = None):
+  return InteractiveResponse(value = value, wait_for_input = True)
 
-  DIRECTIONS = {
-      'back': Direction.BACK,
-      'left': Direction.LEFT,
-      'front': Direction.FRONT,
-      'right': Direction.RIGHT,
-      'up': Direction.UP,
-      'down': Direction.DOWN,
-  }
+def wait_time(time, value = None):
+  return InteractiveResponse(value = value, timeout = time)
+
+DIRECTIONS = {
+  'back': Direction.BACK,
+  'left': Direction.LEFT,
+  'front': Direction.FRONT,
+  'right': Direction.RIGHT,
+  'up': Direction.UP,
+  'down': Direction.DOWN,
+}
+
+
+class Interactive:
 
   def __init__(self):
     self.input_queue = Queue()
+    self.generator = self.run()
 
   def run(self):
     """A non-blocking generator function that yields InteractiveResponses"""
     pass
-
-  def wait_for_input(value = None):
-    return InteractiveResponse(value = value, wait_for_input = True)
-
-  def wait_time(time, value = None):
-    return InteractiveResponse(value = value, timeout = time)
 
   def clear_input(self):
     while True:

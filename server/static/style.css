@@ -27,3 +27,10 @@ body {
   margin-bottom: 0;
   margin-left: 10px;
 }
+.controls-holder {
+  margin-top: 10px;
+  text-align: center;
+}
+.controls-holder .btn-group {
+  display: block;
+}

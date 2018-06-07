@@ -7,7 +7,7 @@
   <script type='application/javascript' src='cube-api.js'></script>
   <script type='application/javascript' src="three.min.js"></script>
 </head>
-<body onload='getCubeNames()'>
+<body onload='getCubeNames()' onkeypress='handleKeyPress(event)'>
   <div class='header'>
     <h1>Cube Controller</h1>
     <div class='container'>
@@ -41,6 +41,9 @@
     </div>
     <div class='row' style='margin-top: 10px;'>
       <div class='span2'>
+        <button type='button' class='btn btn-inverse' onclick='stop()'>Stop</button>
+        <div>Games:</div>
+        <button type='button' class='btn' onclick='start("snake")'>Snake</button>
         <div>Visuals:</div>
         <div class="btn-group btn-group-vertical">
           <button type='button' class='btn' onclick='start("corners")'>Corners</button>
@@ -64,7 +67,6 @@
           <button type='button' class='btn' onclick='start("tetris")'>Tetris</button>
           <button type='button' class='btn' onclick='start("text")'>Text</button>
           <button type='button' class='btn' onclick='start("wave")'>Wave</button>
-          <button type='button' class='btn btn-inverse' onclick='stop()'>Stop</button>
         </div>
       </div>
       <div class='span10'>
@@ -78,6 +80,18 @@
 
             init3dScene(scene, camera, renderer);
           </script>
+        </div>
+        <div class='controls-holder'>
+          <div class='btn-group'>
+            <button type='button' class='btn' title='Up (q)' onclick='sendInput("up")'>&#8607;</button>
+            <button type='button' class='btn' title='Back (w)' onclick='sendInput("back")'>&uarr;</button>
+            <button type='button' class='btn' title='Down (e)' onclick='sendInput("down")'>&#8609;</button>
+          </div>
+          <div class='btn-group'>
+            <button type='button' class='btn' title='Left (a)' onclick='sendInput("left")'>&larr;</button>
+            <button type='button' class='btn' title='Front (s)' onclick='sendInput("front")'>&darr;</button>
+            <button type='button' class='btn' title='Right (d)' onclick='sendInput("right")'>&rarr;</button>
+          </div>
         </div>
       </div>
     </div>

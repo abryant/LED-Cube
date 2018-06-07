@@ -2,6 +2,10 @@ var currentCube = '';
 var currentEventSource = null;
 var leds = null;
 
+function sendInput(input) {
+  send('input:' + input);
+}
+
 function send(command) {
   var url = '/api/send/' + currentCube + '/' + command;
   var request = new XMLHttpRequest();
@@ -244,3 +248,17 @@ function handleCanvasTouchMove(event) {
   }
 }
 
+function handleKeyPress(event) {
+  directionMap = {
+    'w': 'back',
+    'a': 'left',
+    's': 'front',
+    'd': 'right',
+    'q': 'up',
+    'e': 'down',
+  };
+  if (event.key in directionMap) {
+    event.preventDefault();
+    sendInput(directionMap[event.key]);
+  }
+}

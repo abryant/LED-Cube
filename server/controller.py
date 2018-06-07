@@ -1,7 +1,8 @@
 from display import Colour
 from queue import Queue, Empty
-from time import sleep
+import time
 import generators
+from interactive import snake
 from visuals import corners, cube_visuals, edges, extend, faces, flash, flatten, layers, line, matrix, pulse, rainbow, rope, rotate, shuffle, snakes, spiral, starfield, tetris, text, wave
 
 GENERATORS = {
@@ -28,13 +29,18 @@ GENERATORS = {
   'wave': wave.wave,
 }
 
+INTERACTIVE_GENERATORS = {
+  'snake': snake.Snake,
+}
+
 class Controller:
   def __init__(self, queue, file):
     self.queue = queue
     self.file = file
     self.brightness = 0.2
     self.delay = 0.05
-    self.current_generator = None
+    self.current_interactive = None
+    self.current_visual = None
     self.stopped = False
     self.listeners = []
 
@@ -47,45 +53,77 @@ class Controller:
   def control_cube(self):
     try:
       self.send('Controlling...\n')
-      while True:
-        if self.current_generator is None:
+      while not self.stopped:
+        if self.current_interactive is not None:
+          try:
+            result = next(self.current_interactive.generator)
+            frame = generators.get_colours(result.value)
+            if type(frame) is list:
+              self.send_frame(frame)
+            t = time.perf_counter()
+            start_time = t
+            while (not self.stopped
+                   and (self.current_interactive is not None)
+                   and ((result.wait_for_input and not self.current_interactive.has_input())
+                        or (result.timeout is not None and t < start_time + result.timeout))):
+              try:
+                timeout = None
+                if result.timeout is not None:
+                  timeout = result.timeout - (t - start_time)
+                if timeout is None or timeout > 60:
+                  timeout = 60
+                entry = self.queue.get(timeout = timeout)
+                self.process_command(entry)
+              except Empty:
+                # Send a blank line whenever we time out, to stop the connection from dropping
+                self.send(b'\n')
+              t = time.perf_counter()
+          except StopIteration:
+            self.current_interactive = None
+        elif self.current_visual is not None:
+          self.send_visual_frame()
+          t = time.perf_counter()
+          self.last_frame_time = t
+          while (not self.stopped
+                 and (self.current_visual is not None)
+                 and (t < self.last_frame_time + self.delay)):
+            try:
+              entry = self.queue.get(timeout = self.delay - (t - self.last_frame_time))
+              self.process_command(entry)
+            except Empty:
+              pass
+            t = time.perf_counter()
+        else:
           try:
             entry = self.queue.get(timeout = 60)
             self.process_command(entry)
           except Empty:
             # Send a blank line whenever we time out, to stop the connection from dropping.
             self.send(b'\n')
-        else:
-          try:
-            entry = self.queue.get_nowait()
-            self.process_command(entry)
-          except Empty:
-            pass
-        if self.stopped:
-          return
-        if self.current_generator is not None:
-          self.send_frame()
-          sleep(self.delay)
     finally:
       for l in self.listeners:
         l.put(b'quit')
 
-  def send_frame(self):
+  def send_visual_frame(self):
     try:
       while True:
-        frame = next(self.current_generator)
+        frame = next(self.current_visual)
         frame = generators.get_colours(frame)
         if type(frame) is list:
-          frame_bytes = bytes([b for c in frame for b in [c.r, c.g, c.b]])
-          scaled_brightness_bytes = bytes([int(b * self.brightness) for b in frame_bytes])
-          data_scaled = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + scaled_brightness_bytes + b'\n'
-          data_unscaled = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + frame_bytes + b'\n'
-          self.send(data_scaled)
-          for l in self.listeners:
-            l.put(data_unscaled)
+          self.send_frame(frame)
           return
     except StopIteration:
-      self.current_generator = None
+      self.current_visual = None
+
+  def send_frame(self, frame):
+    frame_bytes = bytes([b for c in frame for b in [c.r, c.g, c.b]])
+    scaled_brightness_bytes = bytes([int(b * self.brightness) for b in frame_bytes])
+    data_scaled = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + scaled_brightness_bytes + b'\n'
+    data_unscaled = b'CUBE:' + bytes([len(frame) >> 8, len(frame) & 0xff]) + frame_bytes + b'\n'
+    self.send(data_scaled)
+    for l in self.listeners:
+      l.put(data_unscaled)
+
 
   def process_command(self, entry):
     command = entry['command']
@@ -114,12 +152,22 @@ class Controller:
       except ValueError:
         pass
       return
+    if command.startswith('input:'):
+      data = command[len('input:'):]
+      if self.current_interactive is not None:
+        self.current_interactive.add_input(data)
+      return
     if command.startswith('start:'):
       name = command[len('start:'):].lower()
       if name in GENERATORS:
-        self.current_generator = GENERATORS[name]()
+        self.current_interactive = None
+        self.current_visual = GENERATORS[name]()
+      elif name in INTERACTIVE_GENERATORS:
+        self.current_interactive = INTERACTIVE_GENERATORS[name]()
+        self.current_visual = None
       return
     if command == 'stop':
-      self.current_generator = None
+      self.current_interactive = None
+      self.current_visual = None
       return
 
