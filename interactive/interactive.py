@@ -50,11 +50,13 @@ class Interactive:
   def has_input(self):
     return not self.input_queue.empty()
 
-  def get_input(self, options):
+  def get_input(self, options = None):
     """Consumes input until it reaches one of the options, or returns None if there is none."""
     while True:
       try:
         input = self.input_queue.get_nowait()
+        if options is None:
+          return input
         if input in options:
           return options[input]
       except Empty:
