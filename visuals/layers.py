@@ -4,17 +4,22 @@ import generators
 import random
 
 def layers():
-  hue = 0
-  h = 30
   half_size = (SIZE + 1) // 2
-  colours = [Colour.BLACK for i in range(half_size)]
+  possible_colours = [Colour.red(), Colour.green(), Colour.blue()]
+  colours = [Colour.BLACK for i in range(half_size - 1)] + [possible_colours[0]]
+  possible_colours = possible_colours[1:] + [possible_colours[0]]
+  index = 0
   while True:
     c = Cube()
     for i in range(half_size):
       c.fill(Pos(i, i, i), Pos(SIZE - 1 - i, SIZE - 1 - i, SIZE - 1 - i), colours[i])
     yield c
-    colours = colours[1:] + [hue_to_colour(hue)]
-    hue = (hue + h) % 360
+    new_colour = Colour.BLACK
+    index += 1
+    if index % 2 == 0:
+      new_colour = possible_colours[0]
+      possible_colours = possible_colours[1:] + [new_colour]
+    colours = colours[1:] + [new_colour]
 
 def main():
   with Display() as d:
