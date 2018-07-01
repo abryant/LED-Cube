@@ -12,17 +12,17 @@ def matrix_line():
         cs[i] = Colour((cs[i].r * 0.95, cs[i].g * 0.95, cs[i].b * 0.95))
       if random.randint(0, 100) == 0:
         dot = 0
-        cs[0] = Colour((10, 64, 10))
+        cs[0] = Colour((10, Colour.brightness, 10))
     else:
       for i in range(dot):
         cs[i] = Colour((cs[i].r * 0.95, cs[i].g * 0.95, cs[i].b * 0.95))
       if random.randint(0, 20) == 0:
-        cs[dot] = Colour((0, 32, 0))
+        cs[dot] = Colour((0, Colour.brightness // 2, 0))
         dot += 1
         if dot == SIZE:
           dot = -1
         else:
-          cs[dot] = Colour((10, 64, 10))
+          cs[dot] = Colour((10, Colour.brightness, 10))
     yield cs
 
 def matrix():
