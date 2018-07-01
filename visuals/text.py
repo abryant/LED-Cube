@@ -30,7 +30,7 @@ def text_2d(text, colours):
       yield True
 
 def text(text, colours):
-  return autoscroll(text_2d(text, colours), direction = Direction.FRONT)
+  return generators.repeat(autoscroll(text_2d(text, colours), direction = Direction.FRONT), len(text))
 
 def main():
   with Display() as d:
