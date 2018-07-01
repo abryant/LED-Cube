@@ -25,7 +25,7 @@ GENERATORS = {
   'spiral': spiral.spiral,
   'starfield': starfield.starfield,
   'tetris': tetris.tetris,
-  'text': lambda: text.text("CUBE ", [Colour.red(), Colour.green(), Colour.blue()]),
+  'text': lambda: text.text("COLOUR ", [Colour.red(), Colour.green(), Colour.blue()]),
   'wave': wave.wave,
 }
 
