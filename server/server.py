@@ -4,6 +4,12 @@ from queue import Queue, Empty
 from socketserver import ThreadingMixIn
 from threading import Lock
 from .controller import Controller
+import os.path
+import ssl
+import threading
+
+CERTIFICATE_CHAIN_FILE='/etc/letsencrypt/live/bryants.eu/fullchain.pem'
+CERTIFICATE_PRIVKEY_FILE='/etc/letsencrypt/live/bryants.eu/privkey.pem'
 
 control_queue_lock = Lock()
 cube_control_queues = {}
@@ -128,10 +134,25 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.wfile.write(b'data: ' + b64encode(data) + b'\n\n')
       self.wfile.flush()
 
+def start_https(https_port):
+  https_address = ('', https_port)
+  httpd_ssl = Server(https_address, CubeRequestHandler)
+  ssl_context = ssl.SSLContext()
+  ssl_context.load_cert_chain(CERTIFICATE_CHAIN_FILE, keyfile=CERTIFICATE_PRIVKEY_FILE)
+  httpd_ssl.socket = ssl_context.wrap_socket(httpd_ssl.socket, server_side=True)
+  httpd_ssl.serve_forever()
 
-def main(port = 2823):
-  server_address = ('', port)
-  httpd = Server(server_address, CubeRequestHandler)
+def main(http_port = 2823, https_port = 2824):
+  print('HTTP Port %d' % http_port)
+  http_address = ('', http_port)
+  httpd = Server(http_address, CubeRequestHandler)
+  https_thread = None
+  if os.path.isfile(CERTIFICATE_CHAIN_FILE) and os.path.isfile(CERTIFICATE_PRIVKEY_FILE):
+    print('HTTPS Port %d' % https_port)
+    https_thread = threading.Thread(target = start_https, args = (https_port,))
+    https_thread.start()
+  else:
+    print('Can\'t find SSL certificate files, starting in HTTP-only mode.')
   httpd.serve_forever()
 
 if __name__ == "__main__":
