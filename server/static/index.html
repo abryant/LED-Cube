@@ -3,6 +3,7 @@
 <head>
   <link href="style.css" rel="stylesheet" type="text/css"/>
   <link href="bootstrap.min.css" rel="stylesheet" type="text/css"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script type='application/javascript' src='base64js.min.js'></script>
   <script type='application/javascript' src='cube-api.js'></script>
   <script type='application/javascript' src="three.min.js"></script>
@@ -91,6 +92,15 @@
             <button type='button' class='btn' title='Left (a)' onclick='sendInput("left")'>&larr;</button>
             <button type='button' class='btn' title='Front (s)' onclick='sendInput("front")'>&darr;</button>
             <button type='button' class='btn' title='Right (d)' onclick='sendInput("right")'>&rarr;</button>
+          </div>
+          <div class='microphone-selector'>
+            <label type='checkbox'>
+              <input type='checkbox' onchange='toggleAudio(this)'>
+              <i class='material-icons'>mic</i>
+            </label>
+            <select id='microphone' disabled>
+              <option>Select microphone</option>
+            </select>
           </div>
         </div>
       </div>

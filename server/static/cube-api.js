@@ -262,3 +262,43 @@ function handleKeyPress(event) {
     sendInput(directionMap[event.key]);
   }
 }
+
+function toggleAudio(checkbox) {
+  var select = document.getElementById('microphone');
+  if (checkbox.checked) {
+    select.removeAttribute('disabled');
+    populateMicrophoneList(select);
+  } else {
+    select.setAttribute('disabled', '');
+    setMicrophones(select)([]);
+  }
+}
+
+function populateMicrophoneList(select) {
+  navigator.mediaDevices.getUserMedia({audio: true}).then(listAudioDevices).then(setMicrophones(select));
+}
+
+function listAudioDevices() {
+  return navigator.mediaDevices.enumerateDevices().then((devices) => {
+    return devices
+      .filter((d) => d.kind === 'audioinput')
+      .map((d, i) => ({
+        id: d.deviceId, label: d.label || ('microphone ' + (i + 1))
+      }));
+  });
+}
+
+function setMicrophones(select) {
+  return (devices) => {
+    // Remove all but the first child.
+    while (select.children.length > 1) {
+      select.removeChild(select.children[select.children.length - 1]);
+    }
+    devices.forEach((d) => {
+      var option = document.createElement('option');
+      option.value = d.id;
+      option.innerText = d.label;
+      select.appendChild(option);
+    });
+  };
+}

@@ -34,3 +34,15 @@ body {
 .controls-holder .btn-group {
   display: block;
 }
+.microphone-selector {
+  margin-top: 10px;
+}
+.microphone-selector label {
+  display: inline;
+}
+.microphone-selector i {
+  vertical-align: middle;
+}
+.microphone-selector > select {
+  margin-bottom: 0;
+}
