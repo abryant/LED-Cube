@@ -143,7 +143,7 @@ var currentPosition;
 function init3dScene(scene, camera, renderer) {
   cube = makeCube();
   scene.add(cube);
-  currentPosition = new THREE.Spherical(20, Math.PI / 2, 0);
+  currentPosition = new THREE.Spherical(40, Math.PI / 2, 0);
 
   renderer.domElement.onmousedown = handleCanvasMouseDown;
   renderer.domElement.onmouseup = handleCanvasMouseUp;
@@ -201,7 +201,7 @@ function handleCanvasMouseWheel(event) {
   var ZOOM_SPEED = 2;
   event.preventDefault();
   if (event.deltaY > 0) {
-    currentPosition.radius = Math.min(currentPosition.radius + ZOOM_SPEED, 40);
+    currentPosition.radius = Math.min(currentPosition.radius + ZOOM_SPEED, 60);
   } else if (event.deltaY < 0) {
     currentPosition.radius = Math.max(currentPosition.radius - ZOOM_SPEED, 2);
   }
