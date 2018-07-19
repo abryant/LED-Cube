@@ -1,6 +1,8 @@
 var currentCube = '';
 var currentEventSource = null;
 var leds = null;
+var audioContext = null;
+var audioAnalyser = null;
 
 function sendInput(input) {
   send('input:' + input);
@@ -271,6 +273,7 @@ function toggleAudio(checkbox) {
   } else {
     select.setAttribute('disabled', '');
     setMicrophones(select)([]);
+    stopAudioProcessing();
   }
 }
 
@@ -302,3 +305,28 @@ function setMicrophones(select) {
     });
   };
 }
+
+function stopAudioProcessing() {
+  if (audioContext != null) {
+    audioContext.close();
+  }
+  audioContext = null;
+  audioAnalyser = null;
+}
+
+function selectMicrophone(id) {
+  if (id == null || id == '') {
+    stopAudioProcessing();
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio: {deviceId: {exact: id}}})
+    .then((stream) => {
+      stopAudioProcessing();
+      audioContext = new AudioContext();
+      var source = audioContext.createMediaStreamSource(stream);
+      audioAnalyser = audioContext.createAnalyser();
+      audioAnalyser.fftSize = 2048;
+      source.connect(audioAnalyser);
+    });
+}
+

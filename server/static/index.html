@@ -98,8 +98,8 @@
               <input type='checkbox' onchange='toggleAudio(this)'>
               <i class='material-icons'>mic</i>
             </label>
-            <select id='microphone' disabled>
-              <option>Select microphone</option>
+            <select id='microphone' onchange='selectMicrophone(this.value)' disabled>
+              <option value=''>Select microphone</option>
             </select>
           </div>
         </div>
