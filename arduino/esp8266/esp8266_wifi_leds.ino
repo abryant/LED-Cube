@@ -12,6 +12,8 @@ WiFiManager wifiManager;
 bool hasConnected = false;
 uint32_t lastReceiveTimeMillis = 0;
 
+String server = "bryants.eu:2823";
+
 void setup() {
   system_update_cpu_freq(160);
   pinMode(2, OUTPUT);
@@ -33,15 +35,32 @@ void setup() {
   display(data, DEFAULT_LEDS * 3);
   free(data);
 
+  char serverChars[81];
+  serverChars[80] = '\0';
+  strncpy(serverChars, server.c_str(), 80);
+  WiFiManagerParameter serverParameter("server", "Cube Server", serverChars, 80);
+  wifiManager.addParameter(&serverParameter);
+
   wifiManager.autoConnect("ESP-12E", "ddr;rtoE");
+
+  server = String(serverParameter.getValue());
 }
 
 WiFiClient client;
 
 void makeGetRequest() {
+  int colonIndex = server.lastIndexOf(':');
+  String host = server.substring(0, colonIndex);
+  int port = 0;
+  if (colonIndex != 0) {
+    port = server.substring(colonIndex + 1).toInt();
+  }
+  if (port == 0) {
+    port = 80;
+  }
   // If we're already connected, client.connect() will disconnect.
   int retries = 3;
-  while (!client.connect("bryants.eu", 2823)) {
+  while (!client.connect(host, port)) {
     // If we've ever connected to the server before (this boot), then keep retrying forever.
     // This helps when the server is temporarily down during testing.
     if (!hasConnected) {
@@ -130,7 +149,8 @@ void loop() {
   free(data);
 
   while (client.connected() && client.available()) {
-    if (client.read() == '\n') {
+    c = client.read();
+    if (c == '\n' || c == -1) {
       break;
     }
   }
@@ -156,4 +176,3 @@ void display(uint8_t *bytes, uint16_t len) {
 
   endTime = micros();
 }
-
