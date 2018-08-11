@@ -75,7 +75,10 @@ class Controller:
                 if timeout is None or timeout > 60:
                   timeout = 60
                 entry = self.queue.get(timeout = timeout)
+                old_interactive = self.current_interactive
                 self.process_command(entry)
+                if self.current_interactive is not old_interactive:
+                  break
               except Empty:
                 # Send a blank line whenever we time out, to stop the connection from dropping
                 self.send(b'\n')
