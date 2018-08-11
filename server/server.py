@@ -7,6 +7,7 @@ from .controller import Controller
 import os.path
 import ssl
 import threading
+import urllib
 
 CERTIFICATE_CHAIN_FILE='/etc/letsencrypt/live/bryants.eu/fullchain.pem'
 CERTIFICATE_PRIVKEY_FILE='/etc/letsencrypt/live/bryants.eu/privkey.pem'
@@ -42,7 +43,8 @@ def send_to_cube(name, command):
   with control_queue_lock:
     if name not in cube_control_queues:
       return False
-    cube_control_queues[name].put({'command': command})
+    for cmd in command.split('/'):
+      cube_control_queues[name].put({'command': urllib.parse.unquote(cmd)})
     return True
 
 class Server(ThreadingMixIn, HTTPServer):
