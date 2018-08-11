@@ -3,6 +3,14 @@ var currentEventSource = null;
 var leds = null;
 var audioContext = null;
 var audioAnalyser = null;
+const FFT_SIZE = 1024;
+const FREQUENCY_BINS = FFT_SIZE / 2;
+const ANALYSE_DELAY = 25;
+var frequencyData = new Float32Array(FREQUENCY_BINS);
+var timeData = new Float32Array(FFT_SIZE);
+var analyserReadInterval = null;
+var lastSendTime = null;
+var maxFloats = null;
 
 function sendInput(input) {
   send('input:' + input);
@@ -309,9 +317,13 @@ function setMicrophones(select) {
 function stopAudioProcessing() {
   if (audioContext != null) {
     audioContext.close();
+    audioContext = null;
   }
-  audioContext = null;
   audioAnalyser = null;
+  if (analyserReadInterval != null) {
+    clearInterval(analyserReadInterval);
+    analyserReadInterval = null;
+  }
 }
 
 function selectMicrophone(id) {
@@ -325,8 +337,117 @@ function selectMicrophone(id) {
       audioContext = new AudioContext();
       var source = audioContext.createMediaStreamSource(stream);
       audioAnalyser = audioContext.createAnalyser();
-      audioAnalyser.fftSize = 2048;
+      audioAnalyser.fftSize = FFT_SIZE;
       source.connect(audioAnalyser);
+
+      send('start:interactive_autoscroll');
+      analyserReadInterval = setInterval(analyseSignal, ANALYSE_DELAY);
     });
 }
 
+function min(a, b) {
+  return a < b ? a : b;
+}
+
+function max(a, b) {
+  return a < b ? b : a;
+}
+
+// takes input, which may be between start and end, and scales it into a value from 0 to 1
+// 0 means closer to start, 1 means closer to end
+function scale(input, start, end) {
+  var out = (input - start) / (end - start);
+  out = max(out, 0);
+  out = min(out, 1);
+  return out;
+}
+
+function analyseSignal() {
+  audioAnalyser.getFloatFrequencyData(frequencyData);
+  audioAnalyser.getFloatTimeDomainData(timeData);
+
+  if (maxFloats == null) {
+    maxFloats = new Float32Array(frequencyData);
+  } else {
+    maxFloats.set(frequencyData.map((e, i) => max(e, maxFloats[i])));
+  }
+
+  var time = new Date().getTime();
+  var diff = time - lastSendTime;
+  if (diff > 50) {
+    lastSendTime = time;
+
+    sendInput(buildLayer(generateAudioGrid(maxFloats)));
+    maxFloats = null;
+  }
+}
+
+function hueToColour(hue) {
+  var colour = new Array(3);
+  while (hue < 0) {
+    hue += 360;
+  }
+  while (hue >= 360) {
+    hue -= 360;
+  }
+  if (hue < 120) {
+    colour[0] = (120 - hue) * 255 / 120;
+    colour[1] = hue * 255 / 120;
+    colour[2] = 0;
+    return colour;
+  }
+  if (hue < 240) {
+    colour[0] = 0;
+    colour[1] = (240 - hue) * 255 / 120;
+    colour[2] = (hue - 120) * 255 / 120;
+    return colour;
+  }
+  colour[0] = (hue - 240) * 255 / 120;
+  colour[1] = 0;
+  colour[2] = (360 - hue) * 255 / 120;
+  return colour;
+}
+
+function generateAudioGrid(fftData) {
+  var bandSize = fftData.length / 64;
+  var compressed = new Array(8);
+  for (var i = 0; i < 8; ++i) {
+    for (var j = 0; j < bandSize; ++j) {
+      if (compressed[i] == null) {
+        compressed[i] = fftData[i*bandSize + j];
+      } else {
+        compressed[i] = max(compressed[i], fftData[i*bandSize + j]);
+      }
+    }
+  }
+
+  var grid = new Array(8);
+  for (var x = 0; x < 8; ++x) {
+    grid[x] = new Array(8);
+    var scaled = Math.round(scale(compressed[x], -70, -30) * 8);
+    for (var y = 0; y < 8; ++y) {
+      if (y >= (8 - scaled)) {
+        grid[x][y] = hueToColour(x * 360 / 7);
+      } else {
+        grid[x][y] = new Array(0, 0, 0);
+      }
+    }
+  }
+  return grid;
+}
+
+function buildLayer(grid) {
+  var result = '';
+  for (var x = 0; x < grid.length; x++) {
+    for (var y = 0; y < grid[x].length; y++) {
+      result += grid[x][y][0].toFixed(0) + ',' + grid[x][y][1].toFixed(0) + ',' + grid[x][y][2].toFixed(0);
+      if (y != grid[x].length - 1) {
+        result += ';';
+      }
+    }
+    if (x != grid.length - 1) {
+      result += '|';
+    }
+  }
+  return result;
+}
