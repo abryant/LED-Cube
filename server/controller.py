@@ -3,7 +3,7 @@ from queue import Queue, Empty
 import time
 import generators
 from interactive import draw, snake, write, interactive_autoscroll, spectrogram
-from visuals import corners, cube_visuals, edges, extend, faces, flash, flatten, layers, line, matrix, pulse, rainbow, rope, rotate, shuffle, snakes, spiral, starfield, tetris, text, wave
+from visuals import corners, cube_visuals, edges, extend, faces, fireworks, flash, flatten, layers, line, matrix, pulse, rainbow, rope, rotate, shuffle, snakes, spiral, starfield, tetris, text, wave
 
 GENERATORS = {
   'corners': corners.corners,
@@ -11,6 +11,7 @@ GENERATORS = {
   'edges': edges.edges,
   'extend': extend.extend,
   'faces': faces.faces,
+  'fireworks': fireworks.fireworks,
   'flash': flash.flash,
   'flatten': flatten.flatten,
   'layers': lambda: generators.slow(layers.layers(), frames = 4),
