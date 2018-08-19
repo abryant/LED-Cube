@@ -340,7 +340,7 @@ function selectMicrophone(id) {
       audioAnalyser.fftSize = FFT_SIZE;
       source.connect(audioAnalyser);
 
-      send('start:interactive_autoscroll');
+      send('start:spectrogram');
       analyserReadInterval = setInterval(analyseSignal, ANALYSE_DELAY);
     });
 }
@@ -354,7 +354,8 @@ function max(a, b) {
 }
 
 // takes input, which may be between start and end, and scales it into a value from 0 to 1
-// 0 means closer to start, 1 means closer to end
+// 0 means closer to start, 1 means closer to end. input values outside the range will return
+// either 0 or 1 depending on which end of the range they are closer to.
 function scale(input, start, end) {
   var out = (input - start) / (end - start);
   out = max(out, 0);
@@ -377,76 +378,34 @@ function analyseSignal() {
   if (diff > 50) {
     lastSendTime = time;
 
-    sendInput(buildLayer(generateAudioGrid(maxFloats)));
+    sendInput(generateLevelData(generateAudioLevels(maxFloats)));
     maxFloats = null;
   }
 }
 
-function hueToColour(hue) {
-  var colour = new Array(3);
-  while (hue < 0) {
-    hue += 360;
-  }
-  while (hue >= 360) {
-    hue -= 360;
-  }
-  if (hue < 120) {
-    colour[0] = (120 - hue) * 255 / 120;
-    colour[1] = hue * 255 / 120;
-    colour[2] = 0;
-    return colour;
-  }
-  if (hue < 240) {
-    colour[0] = 0;
-    colour[1] = (240 - hue) * 255 / 120;
-    colour[2] = (hue - 120) * 255 / 120;
-    return colour;
-  }
-  colour[0] = (hue - 240) * 255 / 120;
-  colour[1] = 0;
-  colour[2] = (360 - hue) * 255 / 120;
-  return colour;
-}
-
-function generateAudioGrid(fftData) {
+function generateAudioLevels(fftData) {
   var bandSize = fftData.length / 64;
-  var compressed = new Array(8);
+  var result = new Array(8);
   for (var i = 0; i < 8; ++i) {
+    var value = null;
     for (var j = 0; j < bandSize; ++j) {
-      if (compressed[i] == null) {
-        compressed[i] = fftData[i*bandSize + j];
+      if (value == null) {
+        value = fftData[i*bandSize + j];
       } else {
-        compressed[i] = max(compressed[i], fftData[i*bandSize + j]);
+        value = max(value, fftData[i*bandSize + j]);
       }
     }
+    result[i] = Math.round(scale(value, -70, -30) * 8);
   }
-
-  var grid = new Array(8);
-  for (var x = 0; x < 8; ++x) {
-    grid[x] = new Array(8);
-    var scaled = Math.round(scale(compressed[x], -70, -30) * 8);
-    for (var y = 0; y < 8; ++y) {
-      if (y >= (8 - scaled)) {
-        grid[x][y] = hueToColour(x * 360 / 7);
-      } else {
-        grid[x][y] = new Array(0, 0, 0);
-      }
-    }
-  }
-  return grid;
+  return result;
 }
 
-function buildLayer(grid) {
+function generateLevelData(levels) {
   var result = '';
-  for (var x = 0; x < grid.length; x++) {
-    for (var y = 0; y < grid[x].length; y++) {
-      result += grid[x][y][0].toFixed(0) + ',' + grid[x][y][1].toFixed(0) + ',' + grid[x][y][2].toFixed(0);
-      if (y != grid[x].length - 1) {
-        result += ';';
-      }
-    }
-    if (x != grid.length - 1) {
-      result += '|';
+  for (var i = 0; i < levels.length; ++i) {
+    result += levels[i];
+    if (i != levels.length - 1) {
+      result += ',';
     }
   }
   return result;
