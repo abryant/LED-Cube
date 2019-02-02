@@ -160,7 +160,7 @@ function init3dScene(scene, camera, renderer) {
   renderer.domElement.ontouchstart = updateTouchMode;
   renderer.domElement.ontouchend = updateTouchMode;
   renderer.domElement.ontouchmove = handleCanvasTouchMove;
-  renderer.setClearColor(new THREE.Color('#ffffff'));
+  renderer.setClearColor(new THREE.Color('#222222'));
   renderScene = function() {
     cube.setRotationFromEuler(new THREE.Euler(currentPosition.phi - Math.PI / 2, currentPosition.theta, 0));
     camera.position.z = currentPosition.radius;
