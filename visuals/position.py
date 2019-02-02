@@ -57,4 +57,4 @@ def opposite_direction(direction):
   return [d for d in Direction if is_same_axis(d, direction) and d != direction][0]
 
 def perpendicular_direction(dir1, dir2):
-  return [d for d in Direction if not (is_same_axis(d, dir1) or is_same_axis(d, dir2))][0]
+  return [d for d in Direction if is_direction_positive(d) and not (is_same_axis(d, dir1) or is_same_axis(d, dir2))][0]

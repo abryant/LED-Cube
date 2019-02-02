@@ -107,6 +107,8 @@ class Cube:
     return result
 
   def set(self, pos, colour):
+    if not pos.is_in_bounds():
+      raise ValueError(pos)
     self.grid[pos.x][pos.y][pos.z] = colour
 
   def get(self, pos):
