@@ -17,6 +17,9 @@ def wait_for_input(value = None):
 def wait_time(time, value = None):
   return InteractiveResponse(value = value, timeout = time)
 
+def wait_for_input_or_time(time, value = None):
+  return InteractiveResponse(value = value, timeout = time, wait_for_input = True)
+
 DIRECTIONS = {
   'back': Direction.BACK,
   'left': Direction.LEFT,

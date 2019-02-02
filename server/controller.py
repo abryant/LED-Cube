@@ -69,8 +69,8 @@ class Controller:
             start_time = t
             while (not self.stopped
                    and (self.current_interactive is not None)
-                   and ((result.wait_for_input and not self.current_interactive.has_input())
-                        or (result.timeout is not None and t < start_time + result.timeout))):
+                   and (not result.wait_for_input or not self.current_interactive.has_input())
+                   and (result.timeout is None or t < start_time + result.timeout)):
               try:
                 timeout = None
                 if result.timeout is not None:
