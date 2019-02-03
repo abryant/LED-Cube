@@ -8,7 +8,9 @@ from visuals import corners, edges, faces, fireworks, matrix, rope, snakes, spir
 ALL_TIMED_VISUALS = [faces.faces, fireworks.fireworks, edges.edges, corners.corners]
 ALL_IDLE_VISUALS = [snakes.snakes, matrix.matrix, rope.rope, spiral.spiral, starfield.starfield, wave.wave]
 
-ROLLING_AVERAGE_LENGTH = 3
+ROLLING_AVERAGE_LENGTH = 5
+MIN_VISUAL_TIME = 0.3 # seconds
+MAX_VISUAL_TIME = 1.5 # seconds
 
 MAX_VISUAL_ITERATIONS = 20
 MAX_IDLE_FRAMES = 200
@@ -61,12 +63,14 @@ class Rhythm(Interactive):
         self.get_input()
         if last_beat_time is None:
           last_beat_time = t
-        elif t > last_beat_time:
+        elif last_beat_time + MIN_VISUAL_TIME <= t and t <= last_beat_time + MAX_VISUAL_TIME:
           if len(last_delays) == ROLLING_AVERAGE_LENGTH:
             last_delays = last_delays[1:]
             last_delay_times = last_delay_times[1:]
           last_delays.append(t - last_beat_time)
           last_delay_times.append(t)
+          last_beat_time = t
+        elif t > last_beat_time + MAX_VISUAL_TIME:
           last_beat_time = t
 
       # Stop an animation frame if the animation has ended
