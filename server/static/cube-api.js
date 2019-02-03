@@ -1,5 +1,6 @@
 var currentCube = '';
 var currentEventSource = null;
+var lastCubeData = null;
 var leds = null;
 var audioContext = null;
 var audioAnalyser = null;
@@ -93,22 +94,8 @@ function listenToCube() {
     console.log('Error from ' + e.origin);
   });
   currentEventSource.addEventListener('message', function(e) {
-    var data = base64js.toByteArray(e.data);
-    // check for 'CUBE:' at the start
-    if (data[0] != 67 || data[1] != 85 || data[2] != 66 || data[3] != 69 || data[4] != 58) {
-      return;
-    }
-    var len = (data[5] << 8) + data[6];
-    if (data.length < (7 + (3 * len))) {
-      return;
-    }
-    for (var i = 0; i < len; ++i) {
-      var r = data[7 + (3 * i)];
-      var g = data[7 + (3 * i) + 1];
-      var b = data[7 + (3 * i) + 2];
-      leds[i].color = new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
-    }
-    requestAnimationFrame(renderScene);
+    lastCubeData = e.data;
+    requestAnimationFrame(updateCubeAndRender);
   });
 }
 function makeCube() {
@@ -168,6 +155,29 @@ function init3dScene(scene, camera, renderer) {
   }
   requestAnimationFrame(renderScene);
 }
+function updateCubeAndRender() {
+  if (lastCubeData == null) {
+    renderScene();
+    return;
+  }
+  var data = base64js.toByteArray(lastCubeData);
+  // check for 'CUBE:' at the start
+  if (data[0] != 67 || data[1] != 85 || data[2] != 66 || data[3] != 69 || data[4] != 58) {
+    return;
+  }
+  var len = (data[5] << 8) + data[6];
+  if (data.length < (7 + (3 * len))) {
+    return;
+  }
+  for (var i = 0; i < len; ++i) {
+    var r = data[7 + (3 * i)];
+    var g = data[7 + (3 * i) + 1];
+    var b = data[7 + (3 * i) + 2];
+    leds[i].color = new THREE.Color('rgb(' + r + ',' + g + ',' + b + ')');
+  }
+  renderScene();
+}
+
 var rotating = false;
 var scaling = false;
 var rotateStart = null;
