@@ -46,3 +46,8 @@ body {
 .microphone-selector > select {
   margin-bottom: 0;
 }
+.audio-processing-type {
+  margin-top: 10px;
+  text-align: left;
+  display: inline-block;
+}

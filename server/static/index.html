@@ -104,6 +104,11 @@
               <option value=''>Select microphone</option>
             </select>
           </div>
+          <div class='audio-processing-type'>
+            <input type='radio' name='audio-type' onchange='changeAudioType(this)' value='spectrogram' checked disabled> Spectrogram</input>
+            <br/>
+            <input type='radio' name='audio-type' onchange='changeAudioType(this)' value='rhythm' disabled> Rhythm</input>
+          </div>
         </div>
       </div>
     </div>

@@ -6,12 +6,15 @@ var audioContext = null;
 var audioAnalyser = null;
 const FFT_SIZE = 1024;
 const FREQUENCY_BINS = FFT_SIZE / 2;
-const ANALYSE_DELAY = 25;
+const ANALYSE_DELAY = 12;
 var frequencyData = new Float32Array(FREQUENCY_BINS);
+var frequencyDataPrevious = null;
+var beatThreshold = 0.1;
 var timeData = new Float32Array(FFT_SIZE);
 var analyserReadInterval = null;
 var lastSendTime = null;
 var maxFloats = null;
+var audioType = 'spectrogram';
 
 function sendInput(input) {
   send('input:' + input);
@@ -285,11 +288,18 @@ function handleKeyPress(event) {
 
 function toggleAudio(checkbox) {
   var select = document.getElementById('microphone');
+  var audioTypes = document.getElementsByName('audio-type');
   if (checkbox.checked) {
     select.removeAttribute('disabled');
+    for (var i = 0; i < audioTypes.length; ++i) {
+      audioTypes[i].removeAttribute('disabled');
+    }
     populateMicrophoneList(select);
   } else {
     select.setAttribute('disabled', '');
+    for (var i = 0; i < audioTypes.length; ++i) {
+      audioTypes[i].setAttribute('disabled', '');
+    }
     setMicrophones(select)([]);
     stopAudioProcessing();
   }
@@ -348,11 +358,18 @@ function selectMicrophone(id) {
       var source = audioContext.createMediaStreamSource(stream);
       audioAnalyser = audioContext.createAnalyser();
       audioAnalyser.fftSize = FFT_SIZE;
+      audioAnalyser.smoothingTimeConstant = 0;
       source.connect(audioAnalyser);
 
-      send('start:spectrogram');
+      send('start:' + audioType);
       analyserReadInterval = setInterval(analyseSignal, ANALYSE_DELAY);
     });
+}
+
+function changeAudioType(input) {
+  audioType = input.value;
+  frequencyDataPrevious = null;
+  send('start:' + audioType);
 }
 
 function min(a, b) {
@@ -374,6 +391,16 @@ function scale(input, start, end) {
 }
 
 function analyseSignal() {
+  if (audioType == 'spectrogram') {
+    spectrogram();
+  } else if (audioType == 'rhythm') {
+    detectBeat();
+  } else {
+    console.log('Unknown audioType: ' + audioType);
+  }
+}
+
+function spectrogram() {
   audioAnalyser.getFloatFrequencyData(frequencyData);
   audioAnalyser.getFloatTimeDomainData(timeData);
 
@@ -419,4 +446,47 @@ function generateLevelData(levels) {
     }
   }
   return result;
+}
+
+function detectBeat() {
+  audioAnalyser.getFloatFrequencyData(frequencyData);
+  if (frequencyDataPrevious == null) {
+    frequencyDataPrevious = new Float32Array(frequencyData);
+  }
+
+  var sf = getSpectralFlux();
+
+  if (sf > beatThreshold) {
+    var time = new Date().getTime();
+    var diff = time - lastSendTime;
+    if (diff > 50) {
+      lastSendTime = time;
+      sendInput('beat');
+      console.log('beat');
+    } else {
+      console.log('skipped beat');
+    }
+  }
+  frequencyDataPrevious.set(frequencyData);
+}
+
+// Based on: "Parameter Automation in a Dynamic Range Compressor" by Giannoulis et al.
+// https://pdfs.semanticscholar.org/2835/e1642fc8952f4cc9d7a87eda1712f5ed737d.pdf
+function getSpectralFlux() {
+  var sfTop = 0;
+  var sfBottom = 0;
+  for (var i = 0; i < frequencyData.length; ++i) {
+    var freqData = Math.abs(frequencyData[i]);
+    var freqDataPrev = Math.abs(frequencyDataPrevious[i]);
+
+    var diff = freqData - freqDataPrev;
+    var h = (diff + Math.abs(diff)) / 2;
+
+    sfTop += h;
+    sfBottom += freqData;
+  }
+  if (sfBottom == 0) {
+    return 0;
+  }
+  return sfTop / sfBottom;
 }
