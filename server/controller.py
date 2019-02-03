@@ -2,7 +2,7 @@ from display import Colour
 from queue import Queue, Empty
 import time
 import generators
-from interactive import draw, snake, write, interactive_autoscroll, spectrogram
+from interactive import draw, snake, write, interactive_autoscroll, spectrogram, rhythm
 from visuals import corners, cube_visuals, edges, extend, faces, fireworks, flash, flatten, layers, line, matrix, pulse, rainbow, rope, rotate, shuffle, snakes, spiral, starfield, tetris, text, wave
 
 GENERATORS = {
@@ -31,6 +31,7 @@ GENERATORS = {
 }
 
 INTERACTIVE_GENERATORS = {
+  'rhythm': rhythm.Rhythm,
   'draw': draw.Draw,
   'snake': snake.Snake,
   'spectrogram': spectrogram.Spectrogram,
