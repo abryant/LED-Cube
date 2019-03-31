@@ -19,9 +19,9 @@ static inline uint32_t _getCycleCount(void) {
 // Assumes there are 512 LEDs to show, and pixels is 512*3 bytes long.
 void ICACHE_RAM_ATTR espShow(uint8_t *pixels) {
 
-#define CYCLES_800_T0H  (40) // 0.25us
-#define CYCLES_800_T1H  (218) // 1.3625us
-#define CYCLES_800      (274) // 1.7125us per bit
+#define CYCLES_800_T0H  (64) // 0.4us
+#define CYCLES_800_T1H  (160) // 1us
+#define CYCLES_800      (224) // 1.4us per bit
 
 #define LAYER_BYTES (128 * 3)
 #define PIN1 (9)
