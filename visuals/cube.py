@@ -91,20 +91,13 @@ class Cube:
 
     For 8x8x8 cubes, the layer ordering is reversed.
     """
-    result = []
-    for layer_index, layer in enumerate(self.grid):
-      layer_result = []
-      for line_index, line in enumerate(layer):
-        line_result = line[:]
-        if (line_index % 2) == 0:
-          line_result.reverse()
-        layer_result += line_result
-      if (layer_index % 2) == 0:
-        layer_result.reverse()
-      result += layer_result
-    if self.size == 8:
-      result.reverse()
-    return result
+    return [self.grid[
+                self.size - 1 - x if self.size == 8 else x][
+                self.size - 1 - y if x % 2 == 0 else y][
+                self.size - 1 - z if (x * self.size + y) % 2 == 0 else z]
+            for x in range(self.size)
+            for y in range(self.size)
+            for z in range(self.size)]
 
   def set(self, pos, colour):
     if not pos.is_in_bounds():
