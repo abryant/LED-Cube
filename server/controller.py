@@ -49,6 +49,7 @@ class Controller:
     self.current_visual = None
     self.stopped = False
     self.listeners = []
+    self.last_frame_time = time.perf_counter()
 
   def send(self, data):
     if type(data) is str:
@@ -62,12 +63,13 @@ class Controller:
       while not self.stopped:
         if self.current_interactive is not None:
           try:
+            t = time.perf_counter()
+            start_time = t
             result = next(self.current_interactive.generator)
             frame = generators.get_colours(result.value)
             if type(frame) is list:
               self.send_frame(frame)
             t = time.perf_counter()
-            start_time = t
             while (not self.stopped
                    and (self.current_interactive is not None)
                    and (not result.wait_for_input or not self.current_interactive.has_input())
@@ -90,9 +92,10 @@ class Controller:
           except StopIteration:
             self.current_interactive = None
         elif self.current_visual is not None:
-          self.send_visual_frame()
           t = time.perf_counter()
           self.last_frame_time = t
+          self.send_visual_frame()
+          t = time.perf_counter()
           while (not self.stopped
                  and (self.current_visual is not None)
                  and (t < self.last_frame_time + self.delay)):
