@@ -69,6 +69,15 @@ class Controller:
             frame = generators.get_colours(result.value)
             if type(frame) is list:
               self.send_frame(frame)
+
+            entry = self.queue.get_nowait()
+            old_interactive = self.current_interactive
+            self.process_command(entry)
+            if self.current_interactive is not old_interactive:
+              # If we've changed interactive, skip the delay
+              # in case the new one has a different delay.
+              continue
+
             t = time.perf_counter()
             while (not self.stopped
                    and (self.current_interactive is not None)
@@ -84,6 +93,8 @@ class Controller:
                 old_interactive = self.current_interactive
                 self.process_command(entry)
                 if self.current_interactive is not old_interactive:
+                  # If we've changed interactive, stop the current delay
+                  # in case the new one has a different delay.
                   break
               except Empty:
                 # Send a blank line whenever we time out, to stop the connection from dropping
@@ -95,6 +106,7 @@ class Controller:
           t = time.perf_counter()
           self.last_frame_time = t
           self.send_visual_frame()
+          self.process_command(self.queue.get_nowait())
           t = time.perf_counter()
           while (not self.stopped
                  and (self.current_visual is not None)
