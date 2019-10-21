@@ -136,6 +136,11 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.wfile.write(b'data: ' + b64encode(data) + b'\n\n')
       self.wfile.flush()
 
+def start_http(http_port):
+  http_address = ('', http_port)
+  httpd = Server(http_address, CubeRequestHandler)
+  httpd.serve_forever()
+
 def start_https(https_port):
   https_address = ('', https_port)
   httpd_ssl = Server(https_address, CubeRequestHandler)
@@ -146,8 +151,8 @@ def start_https(https_port):
 
 def main(http_port = 2823, https_port = 2824):
   print('HTTP Port %d' % http_port)
-  http_address = ('', http_port)
-  httpd = Server(http_address, CubeRequestHandler)
+  http_thread = threading.Thread(target = start_http, args = (http_port,))
+  http_thread.start()
   https_thread = None
   if os.path.isfile(CERTIFICATE_CHAIN_FILE) and os.path.isfile(CERTIFICATE_PRIVKEY_FILE):
     print('HTTPS Port %d' % https_port)
@@ -155,7 +160,6 @@ def main(http_port = 2823, https_port = 2824):
     https_thread.start()
   else:
     print('Can\'t find SSL certificate files, starting in HTTP-only mode.')
-  httpd.serve_forever()
 
 if __name__ == "__main__":
   main()
