@@ -3,7 +3,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from queue import Queue, Empty
 from socketserver import ThreadingMixIn
 from threading import Lock
-from .controller import Controller
+from .controller import Controller, FileOutput
 import os.path
 import ssl
 import threading
@@ -33,7 +33,7 @@ def start_cube_controller(name, file):
       return
     cube_control_queues[name] = control_queue
   try:
-    controller = Controller(control_queue, file)
+    controller = Controller(control_queue, FileOutput(file))
     controller.control_cube()
   finally:
     with control_queue_lock:
