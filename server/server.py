@@ -12,9 +12,6 @@ import urllib
 CERTIFICATE_CHAIN_FILE='/etc/letsencrypt/live/bryants.eu/fullchain.pem'
 CERTIFICATE_PRIVKEY_FILE='/etc/letsencrypt/live/bryants.eu/privkey.pem'
 
-control_queue_lock = Lock()
-cube_control_queues = {}
-
 path_whitelist = {
   '/': 'text/html',
   '/index.html': 'text/html',
@@ -25,29 +22,7 @@ path_whitelist = {
   '/three.min.js': 'application/javascript',
 }
 
-def start_cube_controller(name, file):
-  control_queue = Queue()
-  with control_queue_lock:
-    if name in cube_control_queues:
-      file.write(b'Cube already exists\n')
-      return
-    cube_control_queues[name] = control_queue
-  try:
-    controller = Controller(control_queue, FileOutput(file))
-    controller.control_cube()
-  finally:
-    with control_queue_lock:
-      del cube_control_queues[name]
-
-def send_to_cube(name, command):
-  with control_queue_lock:
-    if name not in cube_control_queues:
-      return False
-    for cmd in command.split('/'):
-      cube_control_queues[name].put({'command': urllib.parse.unquote(cmd)})
-    return True
-
-class Server(ThreadingMixIn, HTTPServer):
+class CubeHttpServer(ThreadingMixIn, HTTPServer):
   pass
 
 class CubeRequestHandler(BaseHTTPRequestHandler):
@@ -62,7 +37,7 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.send_response(200)
       self.send_header('Content-Type', 'text/plain')
       self.end_headers()
-      start_cube_controller(self.path[len('/api/cube/'):], self.wfile)
+      self.server.cube_server.start_cube_controller(self.path[len('/api/cube/'):], FileOutput(self.wfile))
     elif self.path.startswith('/api/listen/') and len(self.path) > len('/api/listen/'):
       name = self.path[len('/api/listen/'):]
       self.listen_to_cube(name)
@@ -71,8 +46,9 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Content-Type', 'application/json')
       self.end_headers()
       names = []
-      with control_queue_lock:
-        names = [k for k in cube_control_queues]
+      cube_server = self.server.cube_server
+      with cube_server.control_queue_lock:
+        names = [k for k in cube_server.cube_control_queues]
       self.wfile.write(b'{"cubes":[')
       for i in range(len(names)):
         self.wfile.write(b'"' + bytes(names[i], encoding="UTF-8") + b'"')
@@ -97,7 +73,7 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       rest = self.path[len('/api/send/'):]
       name = rest[:rest.find('/')]
       command = rest[rest.find('/')+1:]
-      if send_to_cube(name, command):
+      if self.server.cube_server.send_to_cube(name, command):
         self.send_response(200)
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
@@ -112,11 +88,12 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.end_headers()
 
   def listen_to_cube(self, name):
+    cube_server = self.server.cube_server
     data_queue = Queue()
     cube_exists = False
-    with control_queue_lock:
-      if name in cube_control_queues:
-        cube_control_queues[name].put({'command': 'listen', 'data_queue': data_queue})
+    with cube_server.control_queue_lock:
+      if name in cube_server.cube_control_queues:
+        cube_server.cube_control_queues[name].put({'command': 'listen', 'data_queue': data_queue})
         cube_exists = True
     if not cube_exists:
       self.send_response(500)
@@ -136,31 +113,57 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.wfile.write(b'data: ' + b64encode(data) + b'\n\n')
       self.wfile.flush()
 
-def start_http(http_port):
-  http_address = ('', http_port)
-  httpd = Server(http_address, CubeRequestHandler)
-  httpd.serve_forever()
+class CubeServer:
+  def __init__(self):
+    self.control_queue_lock = Lock()
+    self.cube_control_queues = {}
 
-def start_https(https_port):
-  https_address = ('', https_port)
-  httpd_ssl = Server(https_address, CubeRequestHandler)
-  ssl_context = ssl.SSLContext()
-  ssl_context.load_cert_chain(CERTIFICATE_CHAIN_FILE, keyfile=CERTIFICATE_PRIVKEY_FILE)
-  httpd_ssl.socket = ssl_context.wrap_socket(httpd_ssl.socket, server_side=True)
-  httpd_ssl.serve_forever()
+  def start_cube_controller(self, name, output):
+    control_queue = Queue()
+    with self.control_queue_lock:
+      if name in self.cube_control_queues:
+        output.send_text('Cube already exists\n')
+        return
+      self.cube_control_queues[name] = control_queue
+    try:
+      controller = Controller(control_queue, output)
+      controller.control_cube()
+    finally:
+      with self.control_queue_lock:
+        del self.cube_control_queues[name]
 
-def main(http_port = 2823, https_port = 2824):
-  print('HTTP Port %d' % http_port)
-  http_thread = threading.Thread(target = start_http, args = (http_port,))
-  http_thread.start()
-  https_thread = None
-  if os.path.isfile(CERTIFICATE_CHAIN_FILE) and os.path.isfile(CERTIFICATE_PRIVKEY_FILE):
-    print('HTTPS Port %d' % https_port)
-    https_thread = threading.Thread(target = start_https, args = (https_port,))
-    https_thread.start()
-  else:
-    print('Can\'t find SSL certificate files, starting in HTTP-only mode.')
+  def send_to_cube(self, name, command):
+    with self.control_queue_lock:
+      if name not in self.cube_control_queues:
+        return False
+      for cmd in command.split('/'):
+        self.cube_control_queues[name].put({'command': urllib.parse.unquote(cmd)})
+      return True
 
-if __name__ == "__main__":
-  main()
+  def start_http(self, http_port):
+    http_address = ('', http_port)
+    httpd = CubeHttpServer(http_address, CubeRequestHandler)
+    httpd.cube_server = self
+    httpd.serve_forever()
+
+  def start_https(self, https_port):
+    https_address = ('', https_port)
+    httpd_ssl = CubeHttpServer(https_address, CubeRequestHandler)
+    httpd_ssl.cube_server = self
+    ssl_context = ssl.SSLContext()
+    ssl_context.load_cert_chain(CERTIFICATE_CHAIN_FILE, keyfile=CERTIFICATE_PRIVKEY_FILE)
+    httpd_ssl.socket = ssl_context.wrap_socket(httpd_ssl.socket, server_side=True)
+    httpd_ssl.serve_forever()
+
+  def start(self, http_port = 2823, https_port = 2824):
+    print('HTTP Port %d' % http_port)
+    http_thread = threading.Thread(target = self.start_http, args = (http_port,))
+    http_thread.start()
+    https_thread = None
+    if os.path.isfile(CERTIFICATE_CHAIN_FILE) and os.path.isfile(CERTIFICATE_PRIVKEY_FILE):
+      print('HTTPS Port %d' % https_port)
+      https_thread = threading.Thread(target = self.start_https, args = (https_port,))
+      https_thread.start()
+    else:
+      print('Can\'t find SSL certificate files, starting in HTTP-only mode.')
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from server import server
+from server import CubeServer
 
 if __name__ == "__main__":
-  server.main()
+  CubeServer().start()
 
