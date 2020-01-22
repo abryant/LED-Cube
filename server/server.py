@@ -12,6 +12,8 @@ import urllib
 CERTIFICATE_CHAIN_FILE='/etc/letsencrypt/live/bryants.eu/fullchain.pem'
 CERTIFICATE_PRIVKEY_FILE='/etc/letsencrypt/live/bryants.eu/privkey.pem'
 
+base_path = os.path.dirname(os.path.realpath(__file__))
+
 path_whitelist = {
   '/': 'text/html',
   '/index.html': 'text/html',
@@ -59,7 +61,7 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       filename = self.path
       if filename == '/':
         filename = '/index.html'
-      with open('server/static' + filename, 'rb') as f:
+      with open(os.path.join(base_path, 'static', filename[1:]), 'rb') as f:
         self.send_response(200)
         self.send_header('Content-Type', path_whitelist[filename])
         self.end_headers()
