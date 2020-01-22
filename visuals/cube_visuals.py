@@ -1,20 +1,22 @@
 from display import *
 from .cube import *
 import generators
-from . import edges
-from . import faces
-from . import line
-from . import rainbow
-from . import transitions
-from . import layers
-from . import line_maps
 from . import corners
+from . import edges
 from . import extend
+from . import faces
+from . import fireworks
 from . import flatten
+from . import layers
+from . import line
+from . import line_maps
+from . import matrix
+from . import rainbow
+from . import rope
 from . import snakes
 from . import spiral
 from . import text
-from . import matrix
+from . import transitions
 from . import wave
 
 def cube_visuals():
@@ -40,6 +42,8 @@ def cube_visuals():
     generators.frame_limit(wave.wave(), 100),
     generators.frame_limit(snakes.snakes(), 300),
     generators.frame_limit(matrix.matrix(), 300),
+    generators.frame_limit(rope.rope(), 300),
+    generators.repeat(fireworks.fireworks(), 10),
   ])
 
 if __name__ == "__main__":
