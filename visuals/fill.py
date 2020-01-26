@@ -6,14 +6,14 @@ def fill():
   on = True
   while True:
     colour = hue_to_colour(random.randint(0, 359))
-    all_coords = [(x, y, z) for x in range(c.size) for y in range(c.size) for z in range(c.size)]
-    random.shuffle(all_coords)
-    for counter, coord in enumerate(all_coords):
+    all_positions = [Pos(x, y, z) for x in range(c.size) for y in range(c.size) for z in range(c.size)]
+    random.shuffle(all_positions)
+    for counter, position in enumerate(all_positions):
         if on:
-          c.set(Pos(*coord), colour)
+          c.set(position, colour)
         else:
-          c.set(Pos(*coord), Colour.BLACK)
-        if counter % c.size == 7:
+          c.set(position, Colour.BLACK)
+        if counter % c.size == c.size - 1:
           yield c.copy()
     on = not on
     yield True
