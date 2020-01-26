@@ -4,7 +4,7 @@ Visualizations for a cube of LEDs.
 
 Examples: https://photos.app.goo.gl/b63fNjHddFoOuM0C2
 
-## Starting the server in client-server mode
+## Starting the server in virtual mode
 
 ```
 LED-Cube$ python server.py
