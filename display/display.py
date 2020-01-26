@@ -10,6 +10,12 @@ def open_read(path):
       return f
 
 class Display:
+  """This Display is used for smaller cubes and groups of LEDs.
+
+  It uses a different format from the main server, but can be useful when testing small numbers of LEDs.
+
+  It requires an arduino running arduino/led_controller.ino to be connected to /dev/ttyUSB0, at 115200 baud.
+  """
   def __init__(self, path = DISPLAY_FILE):
     self.path = path
     os.system('stty -F ' + path + ' cs8 115200 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts')

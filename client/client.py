@@ -4,6 +4,11 @@ import urllib3
 from time import sleep
 from display import *
 
+# This client connects to the server to display it on small LED cubes or lines of LEDs via display/display.py.
+# This requires an arduino running arduino/led_controller.ino to be connected to /dev/ttyUSB0 at 115200 baud.
+#
+# On larger 8x8x8 cubes, this client isn't useful. They require an ESP8266 running one of the ESP8266 arduino programs.
+
 def check_prefix(infile, first):
   if first == b'':
     raise EOFError()
