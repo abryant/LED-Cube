@@ -11,6 +11,7 @@ from . import layers
 from . import line
 from . import line_maps
 from . import matrix
+from . import pins
 from . import rainbow
 from . import rope
 from . import snakes
@@ -44,6 +45,7 @@ def cube_visuals():
     generators.frame_limit(matrix.matrix(), 300),
     generators.frame_limit(rope.rope(), 300),
     generators.repeat(fireworks.fireworks(), 10),
+    generators.repeat(pins.pins(), 5),
   ])
 
 if __name__ == "__main__":
