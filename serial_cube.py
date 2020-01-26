@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Starts a server with a default cube that runs on a serial port with the given baud rate.
 # Requires pySerial.
 
