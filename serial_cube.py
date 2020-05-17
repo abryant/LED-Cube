@@ -49,5 +49,5 @@ if __name__ == '__main__':
   serial_thread.start()
   # Start in a while loop, so if the controller quits it will restart immediately.
   while True:
-    server.start_cube_controller(tty_filename.split('/')[-1], output)
+    server.start_cube_controller(tty_filename.split('/')[-1], output, 'start:demo')
 

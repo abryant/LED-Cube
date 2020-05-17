@@ -39,7 +39,7 @@ class CubeRequestHandler(BaseHTTPRequestHandler):
       self.send_response(200)
       self.send_header('Content-Type', 'text/plain')
       self.end_headers()
-      self.server.cube_server.start_cube_controller(self.path[len('/api/cube/'):], FileOutput(self.wfile))
+      self.server.cube_server.start_cube_controller(self.path[len('/api/cube/'):], FileOutput(self.wfile), None)
     elif self.path.startswith('/api/listen/') and len(self.path) > len('/api/listen/'):
       name = self.path[len('/api/listen/'):]
       self.listen_to_cube(name)
@@ -120,8 +120,10 @@ class CubeServer:
     self.control_queue_lock = Lock()
     self.cube_control_queues = {}
 
-  def start_cube_controller(self, name, output):
+  def start_cube_controller(self, name, output, startup_command):
     control_queue = Queue()
+    if startup_command is not None:
+      control_queue.put({'command': startup_command})
     with self.control_queue_lock:
       if name in self.cube_control_queues:
         output.send_text('Cube already exists\n')
