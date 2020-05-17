@@ -37,7 +37,7 @@ INTERACTIVE_GENERATORS = {
   'draw': draw.Draw,
   'snake': snake.Snake,
   'spectrogram': spectrogram.Spectrogram,
-  'write': write.Write,
+  'write': lambda: write.Write(text.marquee_front_right),
   'interactive_autoscroll': interactive_autoscroll.Autoscroll,
 }
 

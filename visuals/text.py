@@ -5,6 +5,7 @@ from .position import *
 from font.font import draw_character
 import generators
 import functools
+import operator
 from . import grid_transitions
 
 def display_character(c, colour, times = 10):
@@ -20,6 +21,27 @@ def marquee(text, colours):
   return generators.sequence(
       [display_character(" ", Colour.BLACK)] + text_characters + [display_character(" ", Colour.BLACK)],
       transition = functools.partial(grid_transitions.scroll, Direction.RIGHT))
+
+def marquee_front_right(text, colours):
+  if type(colours) is not list:
+    colours = [colours]
+  text = '  ' + text + '  '
+  letters = [draw_character(text[i], colours[i % len(colours)], Colour.BLACK) for i in range(len(text))]
+  long_grid = functools.reduce(operator.iconcat, letters, [])
+  c = Cube()
+  display_size = c.size * 2 - 1
+  while True:
+    for start in range(len(long_grid) - display_size + 1):
+      short_grid = long_grid[start:start+display_size]
+      # front face
+      for i in range(c.size):
+        c.fill_line(Direction.DOWN, convert_face_coordinates(Direction.FRONT, (i, 0), 0), short_grid[i])
+      # right face
+      for i in range(c.size - 1):
+        c.fill_line(Direction.DOWN, convert_face_coordinates(Direction.RIGHT, (i + 1, 0), 0), short_grid[c.size + i])
+      yield c.copy()
+    yield True
+
 
 def text_2d(text, colours):
   if type(colours) is not list:
